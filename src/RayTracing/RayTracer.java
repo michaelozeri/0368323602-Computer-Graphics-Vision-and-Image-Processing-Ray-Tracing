@@ -27,7 +27,7 @@ public class RayTracer {
 	public ArrayList<Material> m_materials;
 	public ArrayList<Surface> m_Surfaces;
 	byte[] m_rgbData;
-	public static double epsilon = 0.000001;
+	public static double epsilon = 0.0000001;
 	
 	/**
 	 * for initializing the lists
@@ -422,11 +422,11 @@ public class RayTracer {
 		//calculating reflection color
 		if(MaxRecursionLevel>0 && ((refRed > 0)||(refGreen>0)||(refBlue>0))){
 			//construct new Ray
-			Vector oppositeRayDirection = Vector.ScalarMultiply(rayDirection, -2).normalize();
+			Vector oppositeRayDirection = Vector.ScalarMultiply(rayDirection, -1).normalize();
 			Vector recursionRayDirection = Vector.SubVectors(Vector.ScalarMultiply(normalAtHitPosition, 2*Vector.DotProduct(oppositeRayDirection, normalAtHitPosition)), oppositeRayDirection).normalize();
 			Ray recursionRay = new Ray(recursionRayDirection, hitPositionOnSurface);
 			//Find first surface intersected by ray through pixel
-			Intersection recursionHit = FindIntersection(recursionRay,recursionRay.position,-1);
+			Intersection recursionHit = FindIntersection(recursionRay,recursionRay.position,-2);
 			if(recursionHit.surface != null){
 				//Compute color of sample based on surface radiance
 				GetColor(i,j,recursionHit, recursionRay.direction,recursionRay.position,MaxRecursionLevel-1,surfaceMaterial.rr*refRed,surfaceMaterial.rg*refGreen,surfaceMaterial.rb*refBlue);
