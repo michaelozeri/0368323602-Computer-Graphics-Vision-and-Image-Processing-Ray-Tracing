@@ -432,7 +432,12 @@ public class RayTracer {
 				GetColor(i,j,recursionHit, recursionRay.direction,recursionRay.position,MaxRecursionLevel-1,surfaceMaterial.rr*refRed,surfaceMaterial.rg*refGreen,surfaceMaterial.rb*refBlue);
 			}
 		}
-		
+		if(redPixelColor>1)
+			redPixelColor=1;
+		if(greenPixelColor>1)
+			greenPixelColor=1;
+		if(bluePixelColor>1)
+			bluePixelColor=1;
 		//updating byte array
 		insertColorIntoArray(i, j, redPixelColor*refRed, 0);
 		insertColorIntoArray(i, j, greenPixelColor*refGreen, 1);
