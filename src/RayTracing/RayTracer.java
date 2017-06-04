@@ -380,7 +380,7 @@ public class RayTracer {
 			Intersection transparencyHit = FindIntersection(transparencyRay,transparencyRay.position,-2,false);
 			if(transparencyHit.surface != null){
 				//Compute color of sample based on surface radiance
-				GetColor(i,j,transparencyHit, transparencyRay.direction,transparencyRay.position,MaxRecursionLevel,(1-surfaceMaterial.transparency)*refRed,(1-surfaceMaterial.transparency)*refGreen,(1-surfaceMaterial.transparency)*surfaceMaterial.transparency*refBlue); //TODO: should we multiply in transparency reference color?
+				GetColor(i,j,transparencyHit, transparencyRay.direction,transparencyRay.position,MaxRecursionLevel,(1-surfaceMaterial.transparency)*refRed,(1-surfaceMaterial.transparency)*refGreen,(1-surfaceMaterial.transparency)*refBlue); //TODO: should we multiply in transparency reference color?
 			}
 			else{
 				//insertColorIntoArray(i, j, (surfaceMaterial.transparency)*m_scene.bgr*refRed, 0);
@@ -408,7 +408,7 @@ public class RayTracer {
 			}
 			toLight.normalize();
 			//check if light hits the object
-			double minHitDistanceFromLight = FindIntersection(new Ray(toLight,lightPosition), lightPosition, distanceFromLight, false).distance;
+			double minHitDistanceFromLight = FindIntersection(new Ray(Vector.ScalarMultiply(toLight, -1),lightPosition), lightPosition, distanceFromLight, false).distance;
 			
 			
 			
