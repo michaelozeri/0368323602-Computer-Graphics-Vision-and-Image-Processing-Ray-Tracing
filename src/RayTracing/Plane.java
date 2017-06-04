@@ -16,7 +16,7 @@ public class Plane extends Surface {
 	public double isIntersect(Ray ray, Position cameraPosition){
 		//check if plane is not parallel to ray
 		Vector orthogonal = Vector.crossProduct(this.normal, ray.direction);
-		if(Vector.Magnitude(orthogonal) < RayTracer.epsilon){
+		if(Vector.Magnitude(orthogonal) < RayTracer.m_epsilon){
 			System.out.println("Cross is: ("+orthogonal.Xcor+","+orthogonal.Ycor+","+orthogonal.Zcor+") plane and ray not intersect");
 			return -1;
 		}
@@ -26,8 +26,8 @@ public class Plane extends Surface {
 		if (t < 0 ){ 
 			return -1;
 		}
-		super.exit = t+ 2*RayTracer.epsilon;
-		return t + RayTracer.epsilon;
+		super.exit = t+ 2*RayTracer.m_epsilon;
+		return t + RayTracer.m_epsilon;
 	}
 	
 	public Vector calculateNormalAtPosition(Position pos, Position camera){

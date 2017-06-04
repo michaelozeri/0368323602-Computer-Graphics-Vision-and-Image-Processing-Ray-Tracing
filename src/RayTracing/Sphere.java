@@ -24,7 +24,7 @@ public class Sphere extends Surface {
 		}
 		double Thc = Math.sqrt( Math.pow(this.radius, 2)- doubleD);
 		super.exit = Tca+ Thc;
-		return (Tca-Thc)+RayTracer.epsilon;
+		return (Tca-Thc)+RayTracer.m_epsilon;
 	}
 	
 	@Override

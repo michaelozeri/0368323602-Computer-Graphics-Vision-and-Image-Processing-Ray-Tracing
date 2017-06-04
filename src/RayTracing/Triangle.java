@@ -22,7 +22,7 @@ public class Triangle  extends Surface{
 		Vector norm = Vector.crossProduct(Vector.SubVectors(t3, t1), Vector.SubVectors(t3, t2));
 		norm = norm.normalize();
 		Vector orthogonal = Vector.crossProduct(norm, ray.direction);
-		if(Vector.Magnitude(orthogonal) < RayTracer.epsilon){
+		if(Vector.Magnitude(orthogonal) < RayTracer.m_epsilon){
 			System.out.println("Cross is: ("+orthogonal.Xcor+","+orthogonal.Ycor+","+orthogonal.Zcor+") plane and ray not intersect");
 			return -1;
 		}
@@ -40,8 +40,8 @@ public class Triangle  extends Surface{
 			return -1;
 		if(checkInTriangle(t2,t3, camera, P) == false)
 			return -1;
-		super.exit = t+ 2*RayTracer.epsilon;
-		return t+RayTracer.epsilon;
+		super.exit = t+ 2*RayTracer.m_epsilon;
+		return t+RayTracer.m_epsilon;
 		
 	}
 	private boolean checkInTriangle(Vector t1, Vector t2, Vector camera, Vector ray){

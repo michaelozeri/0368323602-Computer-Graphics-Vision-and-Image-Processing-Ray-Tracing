@@ -27,7 +27,8 @@ public class RayTracer {
 	public ArrayList<Material> m_materials;
 	public ArrayList<Surface> m_Surfaces;
 	byte[] m_rgbData;
-	public static double epsilon = 0.000001;
+	public static double m_epsilon = 0.0001;
+	double[] m_rgbDataSS;
 	
 	/**
 	 * for initializing the lists
@@ -202,6 +203,11 @@ public class RayTracer {
 
 		// Create a byte array to hold the pixel data:
 		m_rgbData = new byte[this.imageWidth * this.imageHeight * 3];
+		m_rgbDataSS = new double[3];
+		m_rgbDataSS[0] = 0;
+		m_rgbDataSS[1] = 0;
+		m_rgbDataSS[2] = 0;
+
 
         // Put your ray tracing code here!
         //
@@ -217,21 +223,51 @@ public class RayTracer {
 		{
 			for (int j = 0; j < this.imageWidth; j++) 
 			{
-				//Construct ray from eye position through view plane
-				Ray ray = ConstructRayThroughPixel(i, j);
-				//Find first surface intersected by ray through pixel
-				
-				Intersection hit = FindIntersection(ray,m_camera.position, -2, true);
-				while(hit.surface!= null && m_materials.get(hit.surface.material_index).transparency != 0){
-					//Compute color of sample based on surface radiance
+				if(m_scene.super_sampling_level > 1)
+				{
+					for (int k = 0; k < m_scene.super_sampling_level; k++) 
+					{
+						for (int l  = 0; l < m_scene.super_sampling_level; l++) 
+						{
+							//Construct ray from eye position through view plane
+							Ray ray = ConstructRayThroughPixelSuperSampling(i, j, k, l,m_scene.super_sampling_level);
+							//Find first surface intersected by ray through pixel
+							
+							Intersection hit = FindIntersection(ray,m_camera.position, -2, true);
+							while(hit.surface!= null && m_materials.get(hit.surface.material_index).transparency != 0){
+								//Compute color of sample based on surface radiance
+								GetColor(i,j,hit, ray.direction,m_camera.position,m_scene.max_recursion,1,1,1);
+								hit.surface.setUsed(true);
+								hit = FindIntersection(ray,m_camera.position, -2, true);
+							}
+							
+							GetColor(i,j,hit, ray.direction,m_camera.position,m_scene.max_recursion,1,1,1);
+							for(Surface surf : m_Surfaces)
+								surf.setUsed(false);
+						}
+					}
+					//until here we summed up all the color values into R,G,B of "big" pixel i,j - now calculate average and insert that
+					calculateAvarageColorSS(i, j);
+				}
+				else
+				{
+					//Construct ray from eye position through view plane
+					Ray ray = ConstructRayThroughPixel(i, j);
+					//Find first surface intersected by ray through pixel
+					
+					Intersection hit = FindIntersection(ray,m_camera.position, -2, true);
+					while(hit.surface!= null && m_materials.get(hit.surface.material_index).transparency != 0){
+						//Compute color of sample based on surface radiance
+						GetColor(i,j,hit, ray.direction,m_camera.position,m_scene.max_recursion,1,1,1);
+						hit.surface.setUsed(true);
+						hit = FindIntersection(ray,m_camera.position, -2, true);
+					}
+					
 					GetColor(i,j,hit, ray.direction,m_camera.position,m_scene.max_recursion,1,1,1);
-					hit.surface.setUsed(true);
-					hit = FindIntersection(ray,m_camera.position, -2, true);
+					for(Surface surf : m_Surfaces)
+						surf.setUsed(false);
 				}
 				
-				GetColor(i,j,hit, ray.direction,m_camera.position,m_scene.max_recursion,1,1,1);
-				for(Surface surf : m_Surfaces)
-					surf.setUsed(false);
 			}
 			if(i%100 == 0){
 				System.out.println("finished for row: "+i);
@@ -340,7 +376,7 @@ public class RayTracer {
 			else{
 				if (t < min_t && t != -1  && (m_materials.get(primitive.material_index).transparency == 0 || t == distance)){
 					min_primitive = primitive;
-					min_t = t+epsilon; 
+					min_t = t + m_epsilon; 
 					if(min_t<distance){
 						return new Intersection(-1, null);
 					}
@@ -368,7 +404,7 @@ public class RayTracer {
 		}
 		
 		Material surfaceMaterial = m_materials.get(intersectionData.surface.material_index);
-		Vector hitPositionOnSurface = Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection, intersectionData.distance-epsilon));
+		Vector hitPositionOnSurface = Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection, intersectionData.distance-m_epsilon));
 		Vector normalAtHitPosition = intersectionData.surface.calculateNormalAtPosition(hitPositionOnSurface, cameraPosition).normalize(); //N
 		
 		
@@ -380,7 +416,7 @@ public class RayTracer {
 			Intersection transparencyHit = FindIntersection(transparencyRay,transparencyRay.position,-2,false);
 			if(transparencyHit.surface != null){
 				//Compute color of sample based on surface radiance
-				GetColor(i,j,transparencyHit, transparencyRay.direction,transparencyRay.position,MaxRecursionLevel,(1-surfaceMaterial.transparency)*refRed,(1-surfaceMaterial.transparency)*refGreen,(1-surfaceMaterial.transparency)*refBlue); //TODO: should we multiply in transparency reference color?
+				GetColor(i,j,transparencyHit, transparencyRay.direction,transparencyRay.position,MaxRecursionLevel,(1-surfaceMaterial.transparency)*refRed,(1-surfaceMaterial.transparency)*refGreen,(1-surfaceMaterial.transparency)*refBlue); 
 			}
 			else{
 				//insertColorIntoArray(i, j, (surfaceMaterial.transparency)*m_scene.bgr*refRed, 0);
@@ -415,7 +451,7 @@ public class RayTracer {
 			Vector R = Vector.SubVectors(Vector.ScalarMultiply(normalAtHitPosition, 2*Vector.DotProduct(toLight, normalAtHitPosition)), toLight).normalize();
 			Vector V = Vector.ScalarMultiply(rayDirection, -1).normalize();
 			//if we are the first object the light hits
-			if(minHitDistanceFromLight-distanceFromLight >= -epsilon ){
+			if(minHitDistanceFromLight-distanceFromLight >= -m_epsilon ){
 				
 				//calculating diffuse color
 				if(Vector.DotProduct(normalAtHitPosition, toLight) > 0){
@@ -457,14 +493,20 @@ public class RayTracer {
 		
 	}
 	
+	@SuppressWarnings("serial")
 	public static class RayTracerException extends Exception {
 		public RayTracerException(String msg) {  super(msg); }
 	}
 	
-	public void insertColorIntoArray(int x,int y,double data,int colorNum){
-		if(data>1.0)
+	private void insertColorIntoArray(int x,int y,double data,int colorNum){
+		
+		if(m_scene.super_sampling_level > 1){
+			insertColorIntoArraySS(x,y,data,colorNum);
+			return;
+		}
+		if(data>1.0){
 			data=1;
-	
+		}
 		byte byteColor = (byte)(255*data);
 		switch(colorNum){
 			case 0:
@@ -493,5 +535,66 @@ public class RayTracer {
 			break;
 		}
 		}
+	
+	/**
+	 * Constructs a Vector Ray for pixel i,j in the view plane with super sampling values
+	 * @return - Vector - representing the Ray from the camera
+	 */
+	private Ray ConstructRayThroughPixelSuperSampling(int i,int j,int k,int l,int ssLevel){
+				
+		double randomDouble = Math.random();
+		double W = m_camera.screen_width;
+		double H = W*(imageHeight/imageWidth);
+		Vector temp1;
+		Vector temp2;
+		//normalized vector ||normalVector|| = 1
+		Vector normalVector = m_camera.normalVector();
+		//normalized vector ||right|| = 1
+		Vector right = m_camera.Right();
+		//calculate V such that ||V|| = 1
+		Vector V = Vector.crossProduct(normalVector, right);
+		//calculate center of image position
+		temp1 = Vector.ScalarMultiply(normalVector, m_camera.screen_distance);
+		Vector centerImagePosition = Vector.AddVectors(m_camera.position, temp1);
+		//calculate top left vector 
+		temp1 = Vector.ScalarMultiply(V, H/2);
+		temp2 = Vector.ScalarMultiply(right, -W/2);
+		Vector topLeft = Vector.AddVectors(centerImagePosition, temp1);
+		topLeft = Vector.AddVectors(topLeft, temp2);
+		
+		//calculate the point coordinates - not exactly in middle of pixel with random double between 0-1
+		temp1 = Vector.ScalarMultiply(right, (i+k*randomDouble/ssLevel)*W/imageWidth );
+		temp2 = Vector.ScalarMultiply(V, -(j+l*randomDouble/ssLevel)*H/imageHeight);
+		Vector s =Vector.AddVectors(temp1, temp2);
+		s = Vector.AddVectors(s, topLeft);
+		Vector rayVectorDirection = Vector.SubVectors(s, m_camera.position).normalize();
+		return new Ray(rayVectorDirection, m_camera.position);
+	}
+	
+	private void calculateAvarageColorSS(int x,int y){
+		double avgRed = m_rgbDataSS[0]/(m_scene.super_sampling_level*m_scene.super_sampling_level);
+		if(avgRed > 1){
+			avgRed = 1;
+		}
+		double avgGreen = m_rgbDataSS[1]/(m_scene.super_sampling_level*m_scene.super_sampling_level);
+		if(avgGreen > 1){
+			avgGreen = 1;
+		}
+		double avgBlue = m_rgbDataSS[2]/(m_scene.super_sampling_level*m_scene.super_sampling_level);
+		if(avgBlue > 1){
+			avgBlue = 1;
+		}
+		
+		m_rgbData[(y * imageWidth + x) * 3 ] = (byte)(255*avgRed);
+		m_rgbData[(y * imageWidth + x) * 3 + 1] = (byte)(255*avgGreen);
+		m_rgbData[(y * imageWidth + x) * 3 + 2] = (byte)(255*avgBlue);
+		m_rgbDataSS[0] =0;
+		m_rgbDataSS[1] = 0;
+		m_rgbDataSS[2] = 0;
+	}
+	
+	private void insertColorIntoArraySS(int x,int y,double data,int colorNum){
+			m_rgbDataSS[colorNum]+=data;
+	}
 	
 }
