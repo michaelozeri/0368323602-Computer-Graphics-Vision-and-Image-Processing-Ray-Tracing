@@ -10,6 +10,7 @@ public class Plane extends Surface {
 		this.normal = normal.normalize();
 		this.offset = offset;
 		super.material_index = material_index;
+		super.used = false;
 	}
 	
 	public double isIntersect(Ray ray, Position cameraPosition){

@@ -12,6 +12,7 @@ public class Triangle  extends Surface{
 		this.vertex2 = vertex2;
 		this.vertex3 = vertex3;
 		super.material_index = material_index;
+		super.used = false;
 	}
 	public double isIntersect(Ray ray, Position Cam){
 		Vector camera = new Vector(ray.position.Xcor,ray.position.Ycor, ray.position.Zcor);

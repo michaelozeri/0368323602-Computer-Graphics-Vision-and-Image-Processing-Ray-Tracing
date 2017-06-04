@@ -220,9 +220,18 @@ public class RayTracer {
 				//Construct ray from eye position through view plane
 				Ray ray = ConstructRayThroughPixel(i, j);
 				//Find first surface intersected by ray through pixel
-				Intersection hit = FindIntersection(ray,m_camera.position, -2);
-				//Compute color of sample based on surface radiance
+				
+				Intersection hit = FindIntersection(ray,m_camera.position, -2, true);
+				while(hit.surface!= null && m_materials.get(hit.surface.material_index).transparency != 0){
+					//Compute color of sample based on surface radiance
+					GetColor(i,j,hit, ray.direction,m_camera.position,m_scene.max_recursion,1,1,1);
+					hit.surface.setUsed(true);
+					hit = FindIntersection(ray,m_camera.position, -2, true);
+				}
+				
 				GetColor(i,j,hit, ray.direction,m_camera.position,m_scene.max_recursion,1,1,1);
+				for(Surface surf : m_Surfaces)
+					surf.setUsed(false);
 			}
 			if(i%100 == 0){
 				System.out.println("finished for row: "+i);
@@ -315,10 +324,12 @@ public class RayTracer {
 	 * @param ray
 	 * @return intersection
 	 */
-	private Intersection FindIntersection(Ray ray,Position camPosition, double distance) { 
+	private Intersection FindIntersection(Ray ray,Position camPosition, double distance, boolean isMain) { 
 		double min_t = Double.MAX_VALUE;
 		Surface min_primitive = null;
 		for(Surface primitive : m_Surfaces){
+			if(isMain==true && primitive.getUsed()==true)
+				continue;
 			double t = Intersection.Intersect(ray, primitive, camPosition);
 			if(distance < 0){
 				if (t < min_t && t != -1){
@@ -329,7 +340,7 @@ public class RayTracer {
 			else{
 				if (t < min_t && t != -1  && (m_materials.get(primitive.material_index).transparency == 0 || t == distance)){
 					min_primitive = primitive;
-					min_t = t; 
+					min_t = t+epsilon; 
 					if(min_t<distance){
 						return new Intersection(-1, null);
 					}
@@ -366,15 +377,15 @@ public class RayTracer {
 			//construct new Ray - reduce epsilon of normal direction
 			Ray transparencyRay = new Ray(rayDirection, Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection,intersectionData.surface.exit)));
 			//Find first surface intersected by ray through pixel
-			Intersection transparencyHit = FindIntersection(transparencyRay,transparencyRay.position,-2);
+			Intersection transparencyHit = FindIntersection(transparencyRay,transparencyRay.position,-2,false);
 			if(transparencyHit.surface != null){
 				//Compute color of sample based on surface radiance
-				GetColor(i,j,transparencyHit, transparencyRay.direction,transparencyRay.position,MaxRecursionLevel,refRed,refGreen,refBlue); //TODO: should we multiply in transparency reference color?
+				GetColor(i,j,transparencyHit, transparencyRay.direction,transparencyRay.position,MaxRecursionLevel,(surfaceMaterial.transparency)*refRed,(surfaceMaterial.transparency)*refGreen,(surfaceMaterial.transparency)*surfaceMaterial.transparency*refBlue); //TODO: should we multiply in transparency reference color?
 			}
 			else{
-				insertColorIntoArray(i, j, surfaceMaterial.transparency*m_scene.bgr*refRed, 0);
-				insertColorIntoArray(i, j,surfaceMaterial.transparency*m_scene.bgg*refGreen, 1);
-				insertColorIntoArray(i, j,surfaceMaterial.transparency*m_scene.bgb*refBlue, 2);	
+				insertColorIntoArray(i, j, (1-surfaceMaterial.transparency)*m_scene.bgr*refRed, 0);
+				insertColorIntoArray(i, j,(1-surfaceMaterial.transparency)*m_scene.bgg*refGreen, 1);
+				insertColorIntoArray(i, j,(1-surfaceMaterial.transparency)*m_scene.bgb*refBlue, 2);	
 			}
 		}
 		
@@ -389,21 +400,23 @@ public class RayTracer {
 		
 			Position lightPosition = light.position;
 			Vector toLight = Vector.SubVectors(lightPosition,hitPositionOnSurface); //L - vector to Light
+			
 			double distanceFromLight = Vector.Magnitude(toLight); //distance from light
 			
-			
-			//check if light hits the object
-			double minHitDistanceFromLight = FindIntersection(new Ray(Vector.SubVectors(lightPosition,hitPositionOnSurface),lightPosition), lightPosition, distanceFromLight).distance;
-			
-			
+			if((!(intersectionData.surface instanceof Sphere)) && (Vector.DotProduct(normalAtHitPosition,toLight)<0)){
+				normalAtHitPosition = Vector.ScalarMultiply(normalAtHitPosition, -1);
+			}
 			toLight.normalize();
+			//check if light hits the object
+			double minHitDistanceFromLight = FindIntersection(new Ray(toLight,lightPosition), lightPosition, distanceFromLight, false).distance;
+			
+			
+			
 			Vector R = Vector.SubVectors(Vector.ScalarMultiply(normalAtHitPosition, 2*Vector.DotProduct(toLight, normalAtHitPosition)), toLight).normalize();
 			Vector V = Vector.ScalarMultiply(rayDirection, -1).normalize();
 			//if we are the first object the light hits
 			if(minHitDistanceFromLight-distanceFromLight >= -epsilon ){
-				if((!(intersectionData.surface instanceof Sphere)) && (Vector.DotProduct(normalAtHitPosition,toLight)<0)){
-					normalAtHitPosition = Vector.ScalarMultiply(normalAtHitPosition, -1);
-				}
+				
 				//calculating diffuse color
 				if(Vector.DotProduct(normalAtHitPosition, toLight) > 0){
 					redPixelColor += surfaceMaterial.dr* Vector.DotProduct(normalAtHitPosition, toLight)*light.red*(1-surfaceMaterial.transparency);
@@ -430,18 +443,13 @@ public class RayTracer {
 			Vector recursionRayDirection = Vector.SubVectors(Vector.ScalarMultiply(normalAtHitPosition, 2*Vector.DotProduct(oppositeRayDirection, normalAtHitPosition)), oppositeRayDirection).normalize();
 			Ray recursionRay = new Ray(recursionRayDirection, hitPositionOnSurface);
 			//Find first surface intersected by ray through pixel
-			Intersection recursionHit = FindIntersection(recursionRay,recursionRay.position,-2);
+			Intersection recursionHit = FindIntersection(recursionRay,recursionRay.position,-2,false);
 			if(recursionHit.surface != null){
 				//Compute color of sample based on surface radiance
 				GetColor(i,j,recursionHit, recursionRay.direction,recursionRay.position,MaxRecursionLevel-1,surfaceMaterial.rr*refRed,surfaceMaterial.rg*refGreen,surfaceMaterial.rb*refBlue);
 			}
 		}
-		if(redPixelColor>1)
-			redPixelColor=1;
-		if(greenPixelColor>1)
-			greenPixelColor=1;
-		if(bluePixelColor>1)
-			bluePixelColor=1;
+		
 		//updating byte array
 		insertColorIntoArray(i, j, redPixelColor*refRed, 0);
 		insertColorIntoArray(i, j, greenPixelColor*refGreen, 1);
@@ -454,34 +462,36 @@ public class RayTracer {
 	}
 	
 	public void insertColorIntoArray(int x,int y,double data,int colorNum){
-			
-			byte byteColor = (byte)(255*data);
-			switch(colorNum){
-				case 0:
-					if(((m_rgbData[(y * imageWidth + x) * 3] & 0xFF) + (byteColor & 0xFF))  > 255){
-						m_rgbData[(y * imageWidth + x) * 3] = (byte)255;				
-					}
-					else{
-						m_rgbData[(y * imageWidth + x) * 3] += byteColor;
-					}
-				break;
-				case 1:
-					if(((m_rgbData[(y * imageWidth + x) * 3 + 1] & 0xFF) + (byteColor & 0xFF))  > 255){
-						m_rgbData[(y * imageWidth + x) * 3 + 1] = (byte)255;				
-					}
-					else{
-						m_rgbData[(y * imageWidth + x) * 3 + 1] += byteColor;
-					}
-				break;
-				case 2:
-					if(((m_rgbData[(y * imageWidth + x) * 3 + 2] & 0xFF) + (byteColor & 0xFF))  > 255){
-						m_rgbData[(y * imageWidth + x) * 3 + 2] = (byte)255;				
-					}
-					else{
-						m_rgbData[(y * imageWidth + x) * 3 + 2] += byteColor;
-					}
-				break;
-			}
+		if(data>1.0)
+			data=1;
+	
+		byte byteColor = (byte)(255*data);
+		switch(colorNum){
+			case 0:
+				if(((m_rgbData[(y * imageWidth + x) * 3] & 0xFF) + (byteColor & 0xFF))  > 255){
+					m_rgbData[(y * imageWidth + x) * 3] = (byte)255;				
+				}
+				else{
+					m_rgbData[(y * imageWidth + x) * 3] += byteColor;
+				}
+			break;
+			case 1:
+				if(((m_rgbData[(y * imageWidth + x) * 3 + 1] & 0xFF) + (byteColor & 0xFF))  > 255){
+					m_rgbData[(y * imageWidth + x) * 3 + 1] = (byte)255;				
+				}
+				else{
+					m_rgbData[(y * imageWidth + x) * 3 + 1] += byteColor;
+				}
+			break;
+			case 2:
+				if(((m_rgbData[(y * imageWidth + x) * 3 + 2] & 0xFF) + (byteColor & 0xFF))  > 255){
+					m_rgbData[(y * imageWidth + x) * 3 + 2] = (byte)255;				
+				}
+				else{
+					m_rgbData[(y * imageWidth + x) * 3 + 2] += byteColor;
+				}
+			break;
+		}
 		}
 	
 }

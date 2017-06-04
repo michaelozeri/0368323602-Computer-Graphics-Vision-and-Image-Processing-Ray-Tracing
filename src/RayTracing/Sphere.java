@@ -1,12 +1,12 @@
 package RayTracing;
 
 public class Sphere extends Surface {
-	
 	public Position center;
 	public float radius;
 	
 	public Sphere(Position pos, float radius, int material_index) {
 		super();
+		super.used = false;
 		this.center = pos;
 		this.radius = radius;
 		super.material_index = material_index;
