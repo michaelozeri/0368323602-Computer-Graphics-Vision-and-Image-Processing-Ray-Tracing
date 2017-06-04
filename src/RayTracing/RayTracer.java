@@ -380,12 +380,12 @@ public class RayTracer {
 			Intersection transparencyHit = FindIntersection(transparencyRay,transparencyRay.position,-2,false);
 			if(transparencyHit.surface != null){
 				//Compute color of sample based on surface radiance
-				GetColor(i,j,transparencyHit, transparencyRay.direction,transparencyRay.position,MaxRecursionLevel,(surfaceMaterial.transparency)*refRed,(surfaceMaterial.transparency)*refGreen,(surfaceMaterial.transparency)*surfaceMaterial.transparency*refBlue); //TODO: should we multiply in transparency reference color?
+				GetColor(i,j,transparencyHit, transparencyRay.direction,transparencyRay.position,MaxRecursionLevel,(1-surfaceMaterial.transparency)*refRed,(1-surfaceMaterial.transparency)*refGreen,(1-surfaceMaterial.transparency)*surfaceMaterial.transparency*refBlue); //TODO: should we multiply in transparency reference color?
 			}
 			else{
-				insertColorIntoArray(i, j, (1-surfaceMaterial.transparency)*m_scene.bgr*refRed, 0);
-				insertColorIntoArray(i, j,(1-surfaceMaterial.transparency)*m_scene.bgg*refGreen, 1);
-				insertColorIntoArray(i, j,(1-surfaceMaterial.transparency)*m_scene.bgb*refBlue, 2);	
+				//insertColorIntoArray(i, j, (surfaceMaterial.transparency)*m_scene.bgr*refRed, 0);
+				//insertColorIntoArray(i, j,(surfaceMaterial.transparency)*m_scene.bgg*refGreen, 1);
+				//insertColorIntoArray(i, j,(surfaceMaterial.transparency)*m_scene.bgb*refBlue, 2);	
 			}
 		}
 		
