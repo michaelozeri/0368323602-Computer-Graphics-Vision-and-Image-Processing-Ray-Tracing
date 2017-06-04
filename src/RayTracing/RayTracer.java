@@ -27,7 +27,7 @@ public class RayTracer {
 	public ArrayList<Material> m_materials;
 	public ArrayList<Surface> m_Surfaces;
 	byte[] m_rgbData;
-	public static double epsilon = 0.0000001;
+	public static double epsilon = 0.000001;
 	
 	/**
 	 * for initializing the lists
@@ -386,10 +386,11 @@ public class RayTracer {
 		
 		//for each light add its color it projects on 
 		for(Light light : m_lights){
-			
+		
 			Position lightPosition = light.position;
 			Vector toLight = Vector.SubVectors(lightPosition,hitPositionOnSurface); //L - vector to Light
 			double distanceFromLight = Vector.Magnitude(toLight); //distance from light
+			
 			
 			//check if light hits the object
 			double minHitDistanceFromLight = FindIntersection(new Ray(Vector.SubVectors(lightPosition,hitPositionOnSurface),lightPosition), lightPosition, distanceFromLight).distance;
@@ -399,8 +400,10 @@ public class RayTracer {
 			Vector R = Vector.SubVectors(Vector.ScalarMultiply(normalAtHitPosition, 2*Vector.DotProduct(toLight, normalAtHitPosition)), toLight).normalize();
 			Vector V = Vector.ScalarMultiply(rayDirection, -1).normalize();
 			//if we are the first object the light hits
-			if(distanceFromLight <= minHitDistanceFromLight){
-					
+			if(minHitDistanceFromLight-distanceFromLight >= -epsilon ){
+				if((!(intersectionData.surface instanceof Sphere)) && (Vector.DotProduct(normalAtHitPosition,toLight)<0)){
+					normalAtHitPosition = Vector.ScalarMultiply(normalAtHitPosition, -1);
+				}
 				//calculating diffuse color
 				if(Vector.DotProduct(normalAtHitPosition, toLight) > 0){
 					redPixelColor += surfaceMaterial.dr* Vector.DotProduct(normalAtHitPosition, toLight)*light.red*(1-surfaceMaterial.transparency);
@@ -414,6 +417,7 @@ public class RayTracer {
 					greenPixelColor += surfaceMaterial.sg*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.green*light.specular_intensity)*(1-surfaceMaterial.transparency);
 					bluePixelColor += surfaceMaterial.sb*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.blue*light.specular_intensity)*(1-surfaceMaterial.transparency);
 				}
+				
 				
 			}
 			
