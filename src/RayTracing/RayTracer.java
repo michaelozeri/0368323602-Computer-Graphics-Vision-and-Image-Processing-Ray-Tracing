@@ -279,7 +279,7 @@ public class RayTracer {
 
 		// The time is measured for your own convenience, rendering speed will not affect your score
 		// unless it is exceptionally slow (more than a couple of minutes)
-		System.out.println("Finished rendering scene in " + renderTime.toString() + " milliseconds.");
+		System.out.println("Finished rendering scene in " + renderTime.toString() + " milliseconds, " + (renderTime / 1000) + " seconds, and "  + (renderTime / 60000) + " minutes.");
 
 		// This is already implemented, and should work without adding any code.
 		saveImage(this.imageWidth, m_rgbData, outputFileName); 
@@ -443,13 +443,13 @@ public class RayTracer {
 				normalAtHitPosition = Vector.ScalarMultiply(normalAtHitPosition, -1);
 			}
 			toLight.normalize();
-			//check if light hits the object
-			double minHitDistanceFromLight = FindIntersection(new Ray(Vector.ScalarMultiply(toLight, -1),lightPosition), lightPosition, distanceFromLight, false).distance;
 			
-			
-			
+			double minHitDistanceFromLight;
 			Vector R = Vector.SubVectors(Vector.ScalarMultiply(normalAtHitPosition, 2*Vector.DotProduct(toLight, normalAtHitPosition)), toLight).normalize();
 			Vector V = Vector.ScalarMultiply(rayDirection, -1).normalize();
+			//check if light hits the object
+			minHitDistanceFromLight = FindIntersectionLight(new Ray(Vector.ScalarMultiply(toLight, -1),lightPosition), lightPosition, distanceFromLight, false,light).distance;
+			
 			//if we are the first object the light hits
 			if(minHitDistanceFromLight-distanceFromLight >= -m_epsilon ){
 				
@@ -466,10 +466,23 @@ public class RayTracer {
 					greenPixelColor += surfaceMaterial.sg*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.green*light.specular_intensity)*(1-surfaceMaterial.transparency);
 					bluePixelColor += surfaceMaterial.sb*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.blue*light.specular_intensity)*(1-surfaceMaterial.transparency);
 				}
-				
-				
+			}else{
+				if((minHitDistanceFromLight != -1)){
+					//calculating diffuse color
+					if(Vector.DotProduct(normalAtHitPosition, toLight) > 0){
+						redPixelColor += surfaceMaterial.dr* Vector.DotProduct(normalAtHitPosition, toLight)*light.red*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
+						greenPixelColor += surfaceMaterial.dg* Vector.DotProduct(normalAtHitPosition, toLight)*light.green*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
+						bluePixelColor += surfaceMaterial.db* Vector.DotProduct(normalAtHitPosition, toLight)*light.blue*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
+					}
+					
+					//calculating specular color
+					if(Vector.DotProduct(V,R)>0){
+						redPixelColor += surfaceMaterial.sr*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.red*light.specular_intensity)*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
+						greenPixelColor += surfaceMaterial.sg*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.green*light.specular_intensity)*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
+						bluePixelColor += surfaceMaterial.sb*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.blue*light.specular_intensity)*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
+					}
+				}
 			}
-			
 		}
 		
 		//calculating reflection color
@@ -595,6 +608,37 @@ public class RayTracer {
 	
 	private void insertColorIntoArraySS(int x,int y,double data,int colorNum){
 			m_rgbDataSS[colorNum]+=data;
+	}
+	
+	/**
+	 * finds out if light hits surface - if the light casts partial shadows result will be different
+	 * @param ray
+	 * @return intersection
+	 */
+	private Intersection FindIntersectionLight(Ray ray,Position camPosition, double distance, boolean isMain,Light light) { 
+		double min_t = Double.MAX_VALUE;
+		Surface min_primitive = null;
+		for(Surface primitive : m_Surfaces){
+			if(isMain==true && primitive.getUsed()==true)
+				continue;
+			double t = Intersection.Intersect(ray, primitive, camPosition);
+			if(distance < 0){
+				if (t < min_t && t != -1){
+					min_primitive = primitive;
+					min_t = t; 
+				}
+			}
+			else{
+				if (t < min_t && t != -1  && (m_materials.get(primitive.material_index).transparency == 0 || t == distance)){
+					min_primitive = primitive;
+					min_t = t + m_epsilon; 
+					if(min_t<distance && light.shadow_intensity == 1){
+						return new Intersection(-1, null);
+					}
+				}
+			}
+		}
+		return new Intersection(min_t, min_primitive);
 	}
 	
 }
