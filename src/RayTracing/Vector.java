@@ -70,7 +70,7 @@ public class Vector  extends Position{
 	 * @param v
 	 * @return double representing ||v|| = sqrt(v Dot V)
 	 */
-	public static double Magnitude(Position v){ //TODO: maybe this should be a field generated in constructor
+	public static double Magnitude(Position v){ 
 		return Math.sqrt(Vector.DotProduct(v, v));
 	}
 	
@@ -81,7 +81,7 @@ public class Vector  extends Position{
 	}
 	
 	/**
-	 * this func calculates the theta for the ray construction process
+	 * this function calculates the theta for the ray construction process
 	 * @param v1
 	 * @param v2
 	 * @return

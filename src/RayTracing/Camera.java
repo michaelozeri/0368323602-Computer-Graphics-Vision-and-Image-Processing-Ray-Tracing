@@ -27,7 +27,7 @@ public class Camera {
 	}
 	
 	/**
-	 * return right vector of camera - normlized
+	 * return right vector of camera - normalized
 	 */
 	public Vector Right(){
 		Vector towards = this.normalVector();

@@ -17,7 +17,6 @@ public class Plane extends Surface {
 		//check if plane is not parallel to ray
 		Vector orthogonal = Vector.crossProduct(this.normal, ray.direction);
 		if(Vector.Magnitude(orthogonal) < RayTracer.m_epsilon){
-			System.out.println("Cross is: ("+orthogonal.Xcor+","+orthogonal.Ycor+","+orthogonal.Zcor+") plane and ray not intersect");
 			return -1;
 		}
 		Vector norm = this.normal;

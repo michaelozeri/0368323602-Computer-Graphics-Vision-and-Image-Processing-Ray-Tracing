@@ -13,6 +13,19 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 /**
+ * Ray tracer program
+ * arguments:
+ * must:
+ * 0 - input scene txt file parth (added here)
+ * 1 - output file path (image path)
+ * not must: (but both need to be supplied - default 500x500)
+ * 2 - image width in pixels
+ * 3 - image height in pixels
+ * @author Michael Ozeri
+ * @author Dor Alt
+ */
+
+/**
  *  Main class for ray tracing exercise.
  */
 public class RayTracer {
@@ -90,7 +103,7 @@ public class RayTracer {
 	 */
 	public void parseScene(String sceneFileName) throws IOException, RayTracerException
 	{
-		//TODO: do we need to initialize all our class lists here?
+		
 		FileReader fr = new FileReader(sceneFileName);
 		BufferedReader bfr = new BufferedReader(fr);
 		String line = null;
@@ -183,7 +196,6 @@ public class RayTracer {
 			}
 		}
 
-		//TODO: validate that the scene is o.k.
         // It is recommended that you check here that the scene is valid,
         // for example camera settings and all necessary materials were defined.
 
@@ -195,7 +207,6 @@ public class RayTracer {
 	/**
 	 * Renders the loaded scene and saves it to the specified file location.
 	 * @param outputFileName - the path to the output file where it should be written
-	 * @throws IOException //TODO: remove this throws and write image like skeleton 
 	 */
 	public void renderScene(String outputFileName) 
 	{
@@ -208,7 +219,6 @@ public class RayTracer {
 		m_rgbDataSS[1] = 0;
 		m_rgbDataSS[2] = 0;
 
-
         // Put your ray tracing code here!
         //
         // Write pixel color values in RGB format to rgbData:
@@ -217,7 +227,6 @@ public class RayTracer {
         //             blue component is in rgbData[(y * this.imageWidth + x) * 3 + 2]
         //
         // Each of the red, green and blue components should be a byte, i.e. 0-255
-		
 		
 		for (int i = 0; i < this.imageHeight; i++) 
 		{
@@ -244,6 +253,7 @@ public class RayTracer {
 							GetColor(i,j,hit, ray.direction,m_camera.position,m_scene.max_recursion,1,1,1);
 							for(Surface surf : m_Surfaces)
 								surf.setUsed(false);
+							
 						}
 					}
 					//until here we summed up all the color values into R,G,B of "big" pixel i,j - now calculate average and insert that
@@ -268,9 +278,6 @@ public class RayTracer {
 						surf.setUsed(false);
 				}
 				
-			}
-			if(i%100 == 0){
-				System.out.println("finished for row: "+i);
 			}
 		}
 		
@@ -323,7 +330,7 @@ public class RayTracer {
 	 * Constructs a Vector Ray for pixel i,j in the view plane
 	 * @param i
 	 * @param j
-	 * @return - Vector - representing the Ray from the camera
+	 * @return - Ray - representing the Ray from the camera through pixel i,j
 	 */
 	private Ray ConstructRayThroughPixel(int i,int j){
 				
@@ -388,7 +395,8 @@ public class RayTracer {
 	}
 	
 	/**
-	 * sets the color for a pixel in the image after calculation all light factors
+	 * sets the color for a pixel i,j in the image after calculation all light factors
+	 * this function is recursive and will update the color m_rgbData global array.
 	 * @param intersectionData
 	 * @return Color - the light to the pixel
 	 */
@@ -397,7 +405,6 @@ public class RayTracer {
 		rayDirection.normalize();
 		//if we didn't hit no surface we return the background color
 		if(intersectionData.surface == null){
-			//System.out.println("didnt intersect nothing, putting background color: "+m_scene.bgr*refRed);
 			insertColorIntoArray(i, j, m_scene.bgr*refRed, 0);
 			insertColorIntoArray(i, j,m_scene.bgg*refGreen, 1);
 			insertColorIntoArray(i, j,m_scene.bgb*refBlue, 2);	
@@ -407,7 +414,6 @@ public class RayTracer {
 		Material surfaceMaterial = m_materials.get(intersectionData.surface.material_index);
 		Vector hitPositionOnSurface = Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection, intersectionData.distance-m_epsilon));
 		Vector normalAtHitPosition = intersectionData.surface.calculateNormalAtPosition(hitPositionOnSurface, cameraPosition).normalize(); //N
-		
 		
 		//calculate background / transparency color 
 		if(surfaceMaterial.transparency > 0){
@@ -421,14 +427,15 @@ public class RayTracer {
 		}
 		
 		//add values to each R,G,B
-		double redPixelColor =  0;
-		double greenPixelColor =  0;
-		double bluePixelColor = 0;
-		
+		double redPixelColorMain =  0;
+		double greenPixelColorMain =  0;
+		double bluePixelColorMain = 0;
 		
 		//for each light add its color it projects on 
 		for(Light light : m_lights){
-		
+			double redPixelColor =  0;
+			double greenPixelColor =  0;
+			double bluePixelColor = 0;
 			Position lightPosition = light.position;
 			Vector toLight = Vector.SubVectors(lightPosition,hitPositionOnSurface); //L - vector to Light
 			
@@ -478,6 +485,13 @@ public class RayTracer {
 					}
 				}
 			}
+			int numOfShadowHits = 1;
+			if(m_scene.shadow_rays_num>1)
+				numOfShadowHits = RayShadowsHits(i, j,light, intersectionData,rayDirection, cameraPosition);
+			//System.out.println(numOfShadowHits);
+			redPixelColorMain +=  redPixelColor*numOfShadowHits/Math.pow(m_scene.shadow_rays_num,2);
+			greenPixelColorMain +=  greenPixelColor*numOfShadowHits/Math.pow(m_scene.shadow_rays_num,2);
+			bluePixelColorMain += bluePixelColor*numOfShadowHits/Math.pow(m_scene.shadow_rays_num,2);
 		}
 		
 		//calculating reflection color
@@ -495,17 +509,22 @@ public class RayTracer {
 		}
 		
 		//updating byte array
-		insertColorIntoArray(i, j, redPixelColor*refRed, 0);
-		insertColorIntoArray(i, j, greenPixelColor*refGreen, 1);
-		insertColorIntoArray(i, j, bluePixelColor*refBlue, 2);
+		insertColorIntoArray(i, j, redPixelColorMain*refRed, 0);
+		insertColorIntoArray(i, j, greenPixelColorMain*refGreen, 1);
+		insertColorIntoArray(i, j, bluePixelColorMain*refBlue, 2);
 		
 	}
 	
-	@SuppressWarnings("serial")
-	public static class RayTracerException extends Exception {
-		public RayTracerException(String msg) {  super(msg); }
-	}
 	
+	/**
+	 * this function inserts the color given as a float - data to the global
+	 * m_rgbData byte array and converts the float into byte
+	 * the function also checks overflow of data before inserting
+	 * @param x
+	 * @param y
+	 * @param data
+	 * @param colorNum - to which color we wish to insert the data.
+	 */
 	private void insertColorIntoArray(int x,int y,double data,int colorNum){
 		
 		if(m_scene.super_sampling_level > 1){
@@ -546,7 +565,9 @@ public class RayTracer {
 	
 	/**
 	 * Constructs a Vector Ray for pixel i,j in the view plane with super sampling values
-	 * @return - Vector - representing the Ray from the camera
+	 * choosing a sub - pixel k,j inside i,j and shooting a ray from a random position inside k,l
+	 * (not necessarily its middle)
+	 * @return - Ray - representing the Ray from the camera to the sub pixel k,l inside pixel i,j
 	 */
 	private Ray ConstructRayThroughPixelSuperSampling(int i,int j,int k,int l,int ssLevel){
 				
@@ -579,7 +600,14 @@ public class RayTracer {
 		return new Ray(rayVectorDirection, m_camera.position);
 	}
 	
-	private void calculateAvarageColorSS(int x,int y){
+	/**
+	 * super sampling
+	 * this function will divide the aggregated value of color of all sub pixel's inside pixel i,j by
+	 * the number of rays sent in order to create an average color value for that pixel
+	 * @param i
+	 * @param j
+	 */
+	private void calculateAvarageColorSS(int i,int j){
 		double avgRed = m_rgbDataSS[0]/(m_scene.super_sampling_level*m_scene.super_sampling_level);
 		if(avgRed > 1){
 			avgRed = 1;
@@ -593,14 +621,23 @@ public class RayTracer {
 			avgBlue = 1;
 		}
 		
-		m_rgbData[(y * imageWidth + x) * 3 ] = (byte)(255*avgRed);
-		m_rgbData[(y * imageWidth + x) * 3 + 1] = (byte)(255*avgGreen);
-		m_rgbData[(y * imageWidth + x) * 3 + 2] = (byte)(255*avgBlue);
+		m_rgbData[(j * imageWidth + i) * 3 ] = (byte)(255*avgRed);
+		m_rgbData[(j * imageWidth + i) * 3 + 1] = (byte)(255*avgGreen);
+		m_rgbData[(j * imageWidth + i) * 3 + 2] = (byte)(255*avgBlue);
 		m_rgbDataSS[0] =0;
 		m_rgbDataSS[1] = 0;
 		m_rgbDataSS[2] = 0;
 	}
 	
+	/**
+	 * this function is called while super sampling
+	 * it will for each pixel i,j store all the color values of its sub-pixel rays
+	 * inside a global array
+	 * @param x
+	 * @param y
+	 * @param data
+	 * @param colorNum
+	 */
 	private void insertColorIntoArraySS(int x,int y,double data,int colorNum){
 			m_rgbDataSS[colorNum]+=data;
 	}
@@ -634,6 +671,98 @@ public class RayTracer {
 			}
 		}
 		return new Intersection(min_t, min_primitive);
+	}
+	
+	/**
+	 * Constructs light Ray for pixel i,j in the plane which simulates the light
+	 * @return - Vector - representing the Ray from the camera
+	 */
+	private Ray ConstructRayThroughPixelForShadowRays(int i,int j,Vector toLight,Light light,Position HitPositionOnSurface){
+				
+		double randomDouble = Math.random();
+		
+		double H =  light.radius;
+		double W = light.radius;
+		Vector temp1;
+		Vector temp2;
+		//normalized vector ||normalVector|| = 1
+		Vector normalVector = toLight;
+		
+		//normalized vector ||right|| = 1 
+		Vector right = findRandomPerpendicularToVector(normalVector);
+		
+		//calculate V such that ||V|| = 1
+		Vector V = Vector.crossProduct(normalVector, right);
+		
+		Position centerImagePosition = light.position;
+		//calculate top left vector 
+		temp1 = Vector.ScalarMultiply(V, H/2);
+		temp2 = Vector.ScalarMultiply(right, -W/2);
+		Vector topLeft = Vector.AddVectors(centerImagePosition, temp1);
+		topLeft = Vector.AddVectors(topLeft, temp2);
+		
+		//calculate the point coordinates - not exactly in middle of pixel with random double between 0-1
+		temp1 = Vector.ScalarMultiply(right, (i*(randomDouble)*W/m_scene.shadow_rays_num));
+		temp2 = Vector.ScalarMultiply(V, -(j*(randomDouble)*H/m_scene.shadow_rays_num));
+		Vector s = Vector.AddVectors(temp1, temp2);
+		s = Vector.AddVectors(s, topLeft);
+		Vector rayVectorDirection = Vector.SubVectors(s, HitPositionOnSurface).normalize();
+		Ray ret = new Ray(Vector.ScalarMultiply(rayVectorDirection, -1), s);
+		
+		return ret;
+	}
+	
+	/**
+	 * finds a random perpendicular Vector to v by randomizing two of its coordinates
+	 * and calculating the third
+	 * @param v
+	 * @return
+	 */
+	private Vector findRandomPerpendicularToVector(Vector v){
+		double b = Math.random();
+		double c = Math.random();
+		return new Vector(-(v.Ycor*b + v.Zcor*c)/v.Xcor, b, c).normalize();
+	}
+	
+
+	int RayShadowsHits(int i,int j,Light light, Intersection intersectionData, Vector rayDirection,Position cameraPosition){
+	
+		rayDirection = rayDirection.normalize();
+		int NumOfHits = 0;
+		
+		Vector hitPositionOnSurface = Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection, intersectionData.distance-m_epsilon));
+
+		Position lightPosition = light.position;
+		Vector toLight = Vector.SubVectors(lightPosition,hitPositionOnSurface); //L - vector to Light
+		double distanceFromLight = Vector.Magnitude(toLight); //distance from light
+		Vector normalAtHitPosition = intersectionData.surface.calculateNormalAtPosition(hitPositionOnSurface, cameraPosition).normalize(); //N
+		
+		if((!(intersectionData.surface instanceof Sphere)) && (Vector.DotProduct(normalAtHitPosition,toLight)<0)){
+			normalAtHitPosition = Vector.ScalarMultiply(normalAtHitPosition, -1);
+		}
+		for (int x = 0; x < m_scene.shadow_rays_num; x++) {
+			for (int y = 0; y < m_scene.shadow_rays_num ; y++) {
+				//Construct ray from eye position through view plane
+				Ray shadowRay = ConstructRayThroughPixelForShadowRays(x, y,toLight,light,hitPositionOnSurface);
+					
+				double minHitDistanceFromLight;
+			
+				//check if light hits the object
+				minHitDistanceFromLight = FindIntersectionLight(shadowRay, shadowRay.position, Vector.Magnitude(Vector.SubVectors(shadowRay.position, hitPositionOnSurface)) , false,light).distance;
+		
+				//if we are the first object the light hits
+				if(minHitDistanceFromLight-distanceFromLight >= 0 || (minHitDistanceFromLight != -1)){
+					if(Vector.DotProduct(normalAtHitPosition, toLight) > 0 ||Vector.DotProduct(normalAtHitPosition, toLight) > 0)
+						NumOfHits++;
+				}
+			}
+		}
+		return NumOfHits;
+	}
+	
+	@SuppressWarnings("serial")
+	public static class RayTracerException extends Exception {
+		public RayTracerException(String msg) {  super(msg); }
 	}
 	
 }

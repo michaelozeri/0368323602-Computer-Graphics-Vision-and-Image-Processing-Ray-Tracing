@@ -10,7 +10,7 @@ public class Material {
 	public float rr,rg,rb;
 	public float  phong_specularity_coefficient;
 	public float  transparency; // 0 - not transparent, 1 - fully transparent
-	public int incidence; //TODO: add for bonus if we want
+	public int incidence; 
 	
 	public Material(float dr, float dg, float db, float sr, float sg, float sb, float rr, float rg, float rb,
 			float phong_specularity_coefficient, float transparency) {
@@ -26,7 +26,7 @@ public class Material {
 		this.rb = rb;
 		this.phong_specularity_coefficient = phong_specularity_coefficient;
 		this.transparency = transparency;
-		this.incidence = 1; //TODO: add for bonus
+		this.incidence = 1; 
 	}
 
 }
