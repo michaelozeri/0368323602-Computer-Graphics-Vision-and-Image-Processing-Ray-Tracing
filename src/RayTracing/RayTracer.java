@@ -397,6 +397,7 @@ public class RayTracer {
 		rayDirection.normalize();
 		//if we didn't hit no surface we return the background color
 		if(intersectionData.surface == null){
+			//System.out.println("didnt intersect nothing, putting background color: "+m_scene.bgr*refRed);
 			insertColorIntoArray(i, j, m_scene.bgr*refRed, 0);
 			insertColorIntoArray(i, j,m_scene.bgg*refGreen, 1);
 			insertColorIntoArray(i, j,m_scene.bgb*refBlue, 2);	
@@ -410,19 +411,13 @@ public class RayTracer {
 		
 		//calculate background / transparency color 
 		if(surfaceMaterial.transparency > 0){
+			//System.out.println("Surface is : "+intersectionData.surface + " and transparency is: " + surfaceMaterial.transparency);
 			//construct new Ray - reduce epsilon of normal direction
 			Ray transparencyRay = new Ray(rayDirection, Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection,intersectionData.surface.exit)));
 			//Find first surface intersected by ray through pixel
 			Intersection transparencyHit = FindIntersection(transparencyRay,transparencyRay.position,-2,false);
-			if(transparencyHit.surface != null){
-				//Compute color of sample based on surface radiance
-				GetColor(i,j,transparencyHit, transparencyRay.direction,transparencyRay.position,MaxRecursionLevel,(1-surfaceMaterial.transparency)*refRed,(1-surfaceMaterial.transparency)*refGreen,(1-surfaceMaterial.transparency)*refBlue); 
-			}
-			else{
-				//insertColorIntoArray(i, j, (surfaceMaterial.transparency)*m_scene.bgr*refRed, 0);
-				//insertColorIntoArray(i, j,(surfaceMaterial.transparency)*m_scene.bgg*refGreen, 1);
-				//insertColorIntoArray(i, j,(surfaceMaterial.transparency)*m_scene.bgb*refBlue, 2);	
-			}
+			//Compute color of sample based on surface radiance
+			GetColor(i,j,transparencyHit, transparencyRay.direction,transparencyRay.position,MaxRecursionLevel,surfaceMaterial.transparency*refRed,surfaceMaterial.transparency*refGreen,surfaceMaterial.transparency*refBlue); 
 		}
 		
 		//add values to each R,G,B
@@ -493,10 +488,10 @@ public class RayTracer {
 			Ray recursionRay = new Ray(recursionRayDirection, hitPositionOnSurface);
 			//Find first surface intersected by ray through pixel
 			Intersection recursionHit = FindIntersection(recursionRay,recursionRay.position,-2,false);
-			if(recursionHit.surface != null){
-				//Compute color of sample based on surface radiance
-				GetColor(i,j,recursionHit, recursionRay.direction,recursionRay.position,MaxRecursionLevel-1,surfaceMaterial.rr*refRed,surfaceMaterial.rg*refGreen,surfaceMaterial.rb*refBlue);
-			}
+			
+			//Compute color of sample based on surface radiance
+			GetColor(i,j,recursionHit, recursionRay.direction,recursionRay.position,MaxRecursionLevel-1,surfaceMaterial.rr*refRed,surfaceMaterial.rg*refGreen,surfaceMaterial.rb*refBlue);
+			
 		}
 		
 		//updating byte array
