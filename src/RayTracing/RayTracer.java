@@ -42,6 +42,7 @@ public class RayTracer {
 	byte[] m_rgbData;
 	public static double m_epsilon = 0.0001;
 	double[] m_rgbDataSS;
+	public double m_recursionEpsilon = 0.0001;
 	
 	/**
 	 * for initializing the lists
@@ -218,15 +219,6 @@ public class RayTracer {
 		m_rgbDataSS[0] = 0;
 		m_rgbDataSS[1] = 0;
 		m_rgbDataSS[2] = 0;
-
-        // Put your ray tracing code here!
-        //
-        // Write pixel color values in RGB format to rgbData:
-        // Pixel [x, y] red component is in rgbData[(y * this.imageWidth + x) * 3]
-        //            green component is in rgbData[(y * this.imageWidth + x) * 3 + 1]
-        //             blue component is in rgbData[(y * this.imageWidth + x) * 3 + 2]
-        //
-        // Each of the red, green and blue components should be a byte, i.e. 0-255
 		
 		for (int i = 0; i < this.imageHeight; i++) 
 		{
@@ -287,7 +279,7 @@ public class RayTracer {
 		// The time is measured for your own convenience, rendering speed will not affect your score
 		// unless it is exceptionally slow (more than a couple of minutes)
 		System.out.println("Finished rendering scene in " + renderTime.toString() + " milliseconds, " + (renderTime / 1000) + " seconds, and "  + (renderTime / 60000) + " minutes.");
-
+		
 		// This is already implemented, and should work without adding any code.
 		saveImage(this.imageWidth, m_rgbData, outputFileName); 
 		
@@ -447,10 +439,15 @@ public class RayTracer {
 			toLight.normalize();
 			
 			double minHitDistanceFromLight;
-			Vector R = Vector.SubVectors(Vector.ScalarMultiply(normalAtHitPosition, 2*Vector.DotProduct(toLight, normalAtHitPosition)), toLight).normalize();
 			Vector V = Vector.ScalarMultiply(rayDirection, -1).normalize();
+			Vector H = Vector.AddVectors(toLight, V).normalize(); //highlight vector
+			
 			//check if light hits the object
 			minHitDistanceFromLight = FindIntersectionLight(new Ray(Vector.ScalarMultiply(toLight, -1),lightPosition), lightPosition, distanceFromLight, false,light).distance;
+			
+			normalAtHitPosition.normalize();
+			double costheta = Vector.DotProduct(H,normalAtHitPosition);
+			
 			
 			//if we are the first object the light hits
 			if(minHitDistanceFromLight-distanceFromLight >= -m_epsilon ){
@@ -463,10 +460,11 @@ public class RayTracer {
 				}
 				
 				//calculating specular color
-				if(Vector.DotProduct(V,R)>0){
-					redPixelColor += surfaceMaterial.sr*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.red*light.specular_intensity)*(1-surfaceMaterial.transparency);
-					greenPixelColor += surfaceMaterial.sg*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.green*light.specular_intensity)*(1-surfaceMaterial.transparency);
-					bluePixelColor += surfaceMaterial.sb*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.blue*light.specular_intensity)*(1-surfaceMaterial.transparency);
+				
+				if(costheta>0){
+					redPixelColor += surfaceMaterial.sr*Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient)*(light.red*light.specular_intensity)*(1-surfaceMaterial.transparency);
+					greenPixelColor += surfaceMaterial.sg*Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient)*(light.green*light.specular_intensity)*(1-surfaceMaterial.transparency);
+					bluePixelColor += surfaceMaterial.sb*Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient)*(light.blue*light.specular_intensity)*(1-surfaceMaterial.transparency);
 				}
 			}else{
 				if((minHitDistanceFromLight != -1)){
@@ -478,16 +476,17 @@ public class RayTracer {
 					}
 					
 					//calculating specular color
-					if(Vector.DotProduct(V,R)>0){
-						redPixelColor += surfaceMaterial.sr*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.red*light.specular_intensity)*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
-						greenPixelColor += surfaceMaterial.sg*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.green*light.specular_intensity)*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
-						bluePixelColor += surfaceMaterial.sb*Math.pow(Vector.DotProduct(V,R), surfaceMaterial.phong_specularity_coefficient)*(light.blue*light.specular_intensity)*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
+					if(costheta>0){
+						redPixelColor += surfaceMaterial.sr*Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient)*(light.red*light.specular_intensity)*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
+						greenPixelColor += surfaceMaterial.sg*Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient)*(light.green*light.specular_intensity)*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
+						bluePixelColor += surfaceMaterial.sb*Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient)*(light.blue*light.specular_intensity)*(1-surfaceMaterial.transparency)*(1-light.shadow_intensity);
 					}
 				}
 			}
 			int numOfShadowHits = 1;
-			if(m_scene.shadow_rays_num>1)
+			if(m_scene.shadow_rays_num>1){
 				numOfShadowHits = RayShadowsHits(i, j,light, intersectionData,rayDirection, cameraPosition);
+			}
 			//System.out.println(numOfShadowHits);
 			redPixelColorMain +=  redPixelColor*numOfShadowHits/Math.pow(m_scene.shadow_rays_num,2);
 			greenPixelColorMain +=  greenPixelColor*numOfShadowHits/Math.pow(m_scene.shadow_rays_num,2);
@@ -495,7 +494,7 @@ public class RayTracer {
 		}
 		
 		//calculating reflection color
-		if(MaxRecursionLevel>0 && ((refRed > 0)||(refGreen>0)||(refBlue>0))){
+		if(MaxRecursionLevel>0 && ((refRed > m_recursionEpsilon)&&(refGreen>m_recursionEpsilon)&&(refBlue>m_recursionEpsilon))){
 			//construct new Ray
 			Vector oppositeRayDirection = Vector.ScalarMultiply(rayDirection, -1).normalize();
 			Vector recursionRayDirection = Vector.SubVectors(Vector.ScalarMultiply(normalAtHitPosition, 2*Vector.DotProduct(oppositeRayDirection, normalAtHitPosition)), oppositeRayDirection).normalize();
