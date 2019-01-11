@@ -43,6 +43,8 @@ public class RayTracer {
 	public static double m_epsilon = 0.0001;
 	double[] m_rgbDataSS;
 	public double m_recursionEpsilon = 0.0001;
+
+
 	
 	/**
 	 * for initializing the lists
