@@ -1,4 +1,4 @@
-package RayTracing;
+package com.rayTracing.RayTracing;
 import java.lang.Math;
 
 public class Vector  extends Position{

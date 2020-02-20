@@ -1,4 +1,4 @@
-package RayTracing;
+package com.rayTracing.RayTracing;
 
 public class Intersection {
 	double distance;

@@ -1,4 +1,4 @@
-package RayTracing;
+package com.rayTracing.RayTracing;
 
 public abstract class Surface {
 	public boolean used;

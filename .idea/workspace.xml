@@ -2,50 +2,47 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a036a860-1639-4fed-be2e-50e15fc5ada1" name="Default Changelist" comment="Moved to intellij gradle project and changed structure">
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Camera.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Intersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Intersection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Light.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Light.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Material.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Material.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Plane.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Plane.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Position.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Position.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Ray.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Ray.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/RayTracer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/RayTracer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Scene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Scene.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Sphere.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Sphere.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Surface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Surface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Triangle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Triangle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RayTracing/Vector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Vector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/MyPool.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyPool.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/MyRoom1.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyRoom1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/MyRoom10.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyRoom10.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/MyTransparency.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyTransparency.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/MyTriangle.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyTriangle.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/MyTriangle2.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyTriangle2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Pool.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Pool.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Room1.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Room1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Room1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Room1.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Room10.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Room10.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Room10out.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Room10out.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Spheres.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Spheres.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Spheres.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Spheres.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Spheresout.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Spheresout.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Transparency.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Transparency.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Transparency.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Transparency.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Triangle.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Triangle.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Triangle2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Triangle2.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Triangleout.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Triangleout.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/Triangleout2.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Triangleout2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/basic.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/basic.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/basic.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/basic.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/pool.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/pool.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracingApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.classpath" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.project" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Camera.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Intersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Intersection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Light.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Light.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Material.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Material.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Plane.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Plane.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Position.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Position.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Ray.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Ray.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/RayTracer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/RayTracer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Scene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Scene.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Sphere.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Sphere.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Surface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Surface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Triangle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Triangle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RayTracing/Vector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/RayTracing/Vector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/MyPool.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/MyPool.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/MyRoom1.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/MyRoom1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/MyRoom10.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/MyRoom10.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/MyTransparency.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/MyTransparency.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/MyTriangle.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/MyTriangle.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/MyTriangle2.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/MyTriangle2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Pool.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Pool.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Room1.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Room1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Room1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Room1.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Room10.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Room10.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Room10out.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Room10out.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Spheres.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Spheres.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Spheres.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Spheres.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Spheresout.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Spheresout.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Transparency.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Transparency.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Transparency.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Transparency.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Triangle.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Triangle.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Triangle2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Triangle2.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Triangleout.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Triangleout.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/Triangleout2.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/Triangleout2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/basic.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/basic.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/basic.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/basic.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/scenes/pool.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/rayTracing/scenes/pool.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,6 +73,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="JUnit5 Test Class" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -121,6 +119,26 @@
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration name="RayTracingApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="0368323602-Computer-Graphics-Vision-and-Image-Processing-Ray-Tracing.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.rayTracing.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.rayTracing.RayTracingApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.RayTracingApplication" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="ServiceViewManager">
     <option name="viewStates">
       <list>
@@ -156,18 +174,58 @@
     <option name="LAST_COMMIT_MESSAGE" value="Moved to intellij gradle project and changed structure" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="555" y="181" width="847" height="677" key="#Project_Structure" timestamp="1582226884044">
+    <state x="555" y="181" width="847" height="677" key="#Project_Structure" timestamp="1582227767182">
       <screen x="0" y="27" width="1920" height="988" />
     </state>
-    <state x="555" y="181" width="847" height="677" key="#Project_Structure/0.27.1920.988@0.27.1920.988" timestamp="1582226884044" />
-    <state x="114" y="113" width="1682" height="813" key="CommitChangelistDialog2" timestamp="1582227090933">
+    <state x="555" y="181" width="847" height="677" key="#Project_Structure/0.27.1920.988@0.27.1920.988" timestamp="1582227767182" />
+    <state x="418" y="178" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1582227821138">
       <screen x="0" y="27" width="1920" height="988" />
     </state>
-    <state x="114" y="113" width="1682" height="813" key="CommitChangelistDialog2/0.27.1920.988@0.27.1920.988" timestamp="1582227090933" />
+    <state x="418" y="178" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.27.1920.988@0.27.1920.988" timestamp="1582227821138" />
+    <state x="741" y="447" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1582227587594">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state x="741" y="447" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.27.1920.988@0.27.1920.988" timestamp="1582227587594" />
+    <state x="114" y="113" width="1682" height="813" key="CommitChangelistDialog2" timestamp="1582227963180">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state x="114" y="113" width="1682" height="813" key="CommitChangelistDialog2/0.27.1920.988@0.27.1920.988" timestamp="1582227963180" />
     <state x="702" y="263" width="495" height="513" key="FileChooserDialogImpl" timestamp="1582226858281">
       <screen x="0" y="27" width="1920" height="988" />
     </state>
     <state x="702" y="263" width="495" height="513" key="FileChooserDialogImpl/0.27.1920.988@0.27.1920.988" timestamp="1582226858281" />
+    <state width="1874" height="320" key="GridCell.Tab.0.bottom" timestamp="1582227882785">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state width="1874" height="320" key="GridCell.Tab.0.bottom/0.27.1920.988@0.27.1920.988" timestamp="1582227882785" />
+    <state width="1874" height="320" key="GridCell.Tab.0.center" timestamp="1582227882784">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state width="1874" height="320" key="GridCell.Tab.0.center/0.27.1920.988@0.27.1920.988" timestamp="1582227882784" />
+    <state width="1874" height="320" key="GridCell.Tab.0.left" timestamp="1582227882783">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state width="1874" height="320" key="GridCell.Tab.0.left/0.27.1920.988@0.27.1920.988" timestamp="1582227882783" />
+    <state width="1874" height="320" key="GridCell.Tab.0.right" timestamp="1582227882785">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state width="1874" height="320" key="GridCell.Tab.0.right/0.27.1920.988@0.27.1920.988" timestamp="1582227882785" />
+    <state width="1874" height="320" key="GridCell.Tab.1.bottom" timestamp="1582227882788">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state width="1874" height="320" key="GridCell.Tab.1.bottom/0.27.1920.988@0.27.1920.988" timestamp="1582227882788" />
+    <state width="1874" height="320" key="GridCell.Tab.1.center" timestamp="1582227882787">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state width="1874" height="320" key="GridCell.Tab.1.center/0.27.1920.988@0.27.1920.988" timestamp="1582227882787" />
+    <state width="1874" height="320" key="GridCell.Tab.1.left" timestamp="1582227882786">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state width="1874" height="320" key="GridCell.Tab.1.left/0.27.1920.988@0.27.1920.988" timestamp="1582227882786" />
+    <state width="1874" height="320" key="GridCell.Tab.1.right" timestamp="1582227882787">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state width="1874" height="320" key="GridCell.Tab.1.right/0.27.1920.988@0.27.1920.988" timestamp="1582227882787" />
     <state x="443" y="97" width="1024" height="845" key="SettingsEditor" timestamp="1582226880342">
       <screen x="0" y="27" width="1920" height="988" />
     </state>
@@ -176,5 +234,13 @@
       <screen x="0" y="27" width="1920" height="988" />
     </state>
     <state x="734" y="222" width="442" height="596" key="com.intellij.testIntegration.createTest.CreateTestDialog/0.27.1920.988@0.27.1920.988" timestamp="1582227012319" />
+    <state x="605" y="257" width="710" height="526" key="find.popup" timestamp="1582227613611">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state x="605" y="257" width="710" height="526" key="find.popup/0.27.1920.988@0.27.1920.988" timestamp="1582227613611" />
+    <state x="623" y="241" width="672" height="678" key="search.everywhere.popup" timestamp="1582227605360">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state x="623" y="241" width="672" height="678" key="search.everywhere.popup/0.27.1920.988@0.27.1920.988" timestamp="1582227605360" />
   </component>
 </project>

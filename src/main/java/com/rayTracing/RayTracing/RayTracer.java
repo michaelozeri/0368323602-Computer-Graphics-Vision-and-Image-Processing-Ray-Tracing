@@ -1,4 +1,4 @@
-package RayTracing;
+package com.rayTracing.RayTracing;
 
 import java.awt.Transparency;
 import java.awt.color.*;
