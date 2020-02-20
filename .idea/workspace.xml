@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a036a860-1639-4fed-be2e-50e15fc5ada1" name="Default Changelist" comment="Moved to intellij gradle project and changed structure">
+      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Camera.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Intersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Intersection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Light.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Light.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Material.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Material.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Plane.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Plane.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Position.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Position.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Ray.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Ray.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/RayTracer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/RayTracer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Scene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Scene.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Sphere.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Sphere.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Surface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Surface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Triangle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Triangle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RayTracing/Vector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RayTracing/Vector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/MyPool.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyPool.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/MyRoom1.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyRoom1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/MyRoom10.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyRoom10.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/MyTransparency.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyTransparency.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/MyTriangle.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyTriangle.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/MyTriangle2.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/MyTriangle2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Pool.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Pool.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Room1.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Room1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Room1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Room1.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Room10.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Room10.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Room10out.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Room10out.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Spheres.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Spheres.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Spheres.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Spheres.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Spheresout.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Spheresout.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Transparency.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Transparency.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Transparency.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Transparency.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Triangle.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Triangle.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Triangle2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Triangle2.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Triangleout.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Triangleout.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/Triangleout2.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/Triangleout2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/basic.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/basic.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/basic.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/basic.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/pool.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/scenes/pool.png" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="isMigrated" value="true" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JUnit5 Test Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1Y5Impy0QCYV0WOckUwGUVG6Zqa" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
+    <property name="create.test.in.the.same.root" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.27555555" />
+    <property name="project.structure.side.proportion" value="0.26950353" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="RayTracing" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java" />
+      <recent name="$PROJECT_DIR$/src/main" />
+      <recent name="$PROJECT_DIR$/src" />
+    </key>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a036a860-1639-4fed-be2e-50e15fc5ada1" name="Default Changelist" comment="" />
+      <created>1582226189379</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1582226189379</updated>
+      <workItem from="1582226191869" duration="370000" />
+      <workItem from="1582226572109" duration="555000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Moved to intellij gradle project and changed structure" />
+    <option name="LAST_COMMIT_MESSAGE" value="Moved to intellij gradle project and changed structure" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="555" y="181" width="847" height="677" key="#Project_Structure" timestamp="1582226884044">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state x="555" y="181" width="847" height="677" key="#Project_Structure/0.27.1920.988@0.27.1920.988" timestamp="1582226884044" />
+    <state x="114" y="113" width="1682" height="813" key="CommitChangelistDialog2" timestamp="1582227090933">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state x="114" y="113" width="1682" height="813" key="CommitChangelistDialog2/0.27.1920.988@0.27.1920.988" timestamp="1582227090933" />
+    <state x="702" y="263" width="495" height="513" key="FileChooserDialogImpl" timestamp="1582226858281">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state x="702" y="263" width="495" height="513" key="FileChooserDialogImpl/0.27.1920.988@0.27.1920.988" timestamp="1582226858281" />
+    <state x="443" y="97" width="1024" height="845" key="SettingsEditor" timestamp="1582226880342">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state x="443" y="97" width="1024" height="845" key="SettingsEditor/0.27.1920.988@0.27.1920.988" timestamp="1582226880342" />
+    <state x="734" y="222" width="442" height="596" key="com.intellij.testIntegration.createTest.CreateTestDialog" timestamp="1582227012319">
+      <screen x="0" y="27" width="1920" height="988" />
+    </state>
+    <state x="734" y="222" width="442" height="596" key="com.intellij.testIntegration.createTest.CreateTestDialog/0.27.1920.988@0.27.1920.988" timestamp="1582227012319" />
+  </component>
+</project>
