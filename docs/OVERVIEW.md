@@ -7,7 +7,7 @@ This repository is a **Java ray tracer** for 3D image synthesis: it loads scene 
 ## Purpose
 
 - Render synthetic images using **recursive ray tracing** with **Phong-style** local shading (diffuse and specular), **reflections**, **transparency**, **shadow rays** (with configurable sampling), and optional **super-sampling** anti-aliasing.
-- **Primary workflow** is a **command-line** program (`RayTracer`) that takes a scene file and output path. A **Spring Boot** application module is also present (web starter + OpenAPI UI dependency) but there are no REST controllers in the codebase yet—`bootRun` starts the default empty web app.
+- **Primary workflow** is a **command-line** program (`RayTracer`) that takes a scene file and output path. **Spring Boot** (`bootRun`) exposes **`GET /api/v1/info`** and **`POST /api/v1/render`** (see Swagger UI); the HTTP API is optional compared to the CLI.
 
 ---
 
@@ -35,6 +35,7 @@ ray-tracing/
 │   └── OVERVIEW.md           # This file
 └── src/main/java/com/rayTracing/
     ├── RayTracingApplication.java    # Spring Boot entry point
+    ├── web/RayTracingApiController.java  # REST: /api/v1/info, /api/v1/render
     ├── RayTracing/                   # Core ray tracing package
     │   ├── RayTracer.java            # CLI main, parser, render loop, shading
     │   ├── Camera.java
@@ -86,7 +87,7 @@ Class: `com.rayTracing.RayTracingApplication`
 ./gradlew start
 ```
 
-This launches the Spring web application context. Extend with controllers if you want HTTP-driven rendering or APIs.
+This starts the embedded web server. Open **[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)** for **GET /api/v1/info** and **POST /api/v1/render** (JSON body: `scenePath`, `outputPath`, optional `width` / `height`).
 
 ---
 

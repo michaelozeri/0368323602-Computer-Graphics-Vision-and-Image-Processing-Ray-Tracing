@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: ray-tracing
+
+logging:
+  level:
+    root: INFO
+    com.rayTracing: DEBUG
+    com.rayTracing.web: DEBUG
