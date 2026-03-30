@@ -5,9 +5,13 @@ import java.awt.color.*;
 import java.awt.image.*;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
@@ -18,7 +22,7 @@ import javax.imageio.ImageIO;
  * must:
  * 0 - input scene txt file parth (added here)
  * 1 - output file path (image path)
- * not must: (but both need to be supplied - default 500x500)
+ * optional (supply both width and height — default 500×500):
  * 2 - image width in pixels
  * 3 - image height in pixels
  *
@@ -37,9 +41,9 @@ public class RayTracer {
     //added fields for the program
     public Scene m_scene;
     public Camera m_camera;
-    public ArrayList<Light> m_lights;
-    public ArrayList<Material> m_materials;
-    public ArrayList<Surface> m_Surfaces;
+    public List<Light> m_lights;
+    public List<Material> m_materials;
+    public List<Surface> m_Surfaces;
     byte[] m_rgbData;
     public static double m_epsilon = 0.0001;
     double[] m_rgbDataSS;
@@ -49,9 +53,9 @@ public class RayTracer {
      * for initializing the lists
      */
     public RayTracer() {
-        this.m_materials = new ArrayList<Material>();
-        this.m_Surfaces = new ArrayList<Surface>();
-        this.m_lights = new ArrayList<Light>();
+        this.m_materials = new ArrayList<>();
+        this.m_Surfaces = new ArrayList<>();
+        this.m_lights = new ArrayList<>();
     }
 
     /**
@@ -74,7 +78,7 @@ public class RayTracer {
             String sceneFileName = args[0];
             String outputFileName = args[1];
 
-            if (args.length > 3) {
+            if (args.length >= 4) {
                 tracer.imageWidth = Integer.parseInt(args[2]);
                 tracer.imageHeight = Integer.parseInt(args[3]);
             }
@@ -103,85 +107,94 @@ public class RayTracer {
      * @throws IOException
      */
     public void parseScene(String sceneFileName) throws IOException {
-
-        FileReader fr = new FileReader(sceneFileName);
-        BufferedReader bfr = new BufferedReader(fr);
-        String line = null;
-        int lineNum = 0;
+        Path scenePath = Path.of(sceneFileName);
         System.out.println("Started parsing scene file " + sceneFileName);
 
-        while ((line = bfr.readLine()) != null) {
-            line = line.trim();
-            ++lineNum;
+        int lineNum = 0;
+        try (BufferedReader bfr = Files.newBufferedReader(scenePath)) {
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                line = line.trim();
+                lineNum++;
 
-            if (line.isEmpty() || (line.charAt(0) == '#')) {  // This line in the scene file is a comment
-                continue;
-            } else {
+                if (line.isEmpty() || line.charAt(0) == '#') {
+                    continue;
+                }
+
                 String code = line.substring(0, 3).toLowerCase();
-                // Split according to white space characters:
                 String[] params = line.substring(3).trim().toLowerCase().split("\\s+");
 
-                if (code.equals("cam")) {
-                    this.m_camera = new Camera(new Position(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2])),
-                            new Vector(Float.parseFloat(params[3]), Float.parseFloat(params[4]), Float.parseFloat(params[5])),
-                            new Vector(Float.parseFloat(params[6]), Float.parseFloat(params[7]), Float.parseFloat(params[8])),
-                            Float.parseFloat(params[9]),
-                            Float.parseFloat(params[10]));
-                    System.out.println(String.format("Parsed camera parameters (line %d)", lineNum));
-                } else if (code.equals("set")) {
-                    this.m_scene = new Scene(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2]),
-                            Integer.parseInt(params[3]),
-                            Integer.parseInt(params[4]),
-                            Integer.parseInt(params[5]));
-                    System.out.println(String.format("Parsed general settings (line %d)", lineNum));
-                } else if (code.equals("mtl")) {
-                    Material material = new Material(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2]),
-                            Float.parseFloat(params[3]), Float.parseFloat(params[4]), Float.parseFloat(params[5]),
-                            Float.parseFloat(params[6]), Float.parseFloat(params[7]), Float.parseFloat(params[8]),
-                            Float.parseFloat(params[9]),
-                            Float.parseFloat(params[10]));
-                    this.m_materials.add(material);
-                    System.out.println(String.format("Parsed material (line %d)", lineNum));
-                } else if (code.equals("sph")) {
-                    Sphere sp = new Sphere(new Position(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2])),
-                            Float.parseFloat(params[3]),
-                            Integer.parseInt(params[4]) - 1);
-                    this.m_Surfaces.add(sp);
-                    System.out.println(String.format("Parsed sphere (line %d)", lineNum));
-                } else if (code.equals("pln")) {
-                    Plane p = new Plane(new Vector(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2])),
-                            Float.parseFloat(params[3]),
-                            Integer.parseInt(params[4]) - 1);
-                    this.m_Surfaces.add(p);
-                    System.out.println(String.format("Parsed plane (line %d)", lineNum));
-                } else if (code.equals("trg")) {
-                    Triangle t = new Triangle(new Position(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2])),
-                            new Position(Float.parseFloat(params[3]), Float.parseFloat(params[4]), Float.parseFloat(params[5])),
-                            new Position(Float.parseFloat(params[6]), Float.parseFloat(params[7]), Float.parseFloat(params[8])),
-                            Integer.parseInt(params[9]) - 1);
-                    this.m_Surfaces.add(t);
-                    System.out.println(String.format("Parsed cylinder (line %d)", lineNum));
-                } else if (code.equals("lgt")) {
-                    Light l = new Light(new Position(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2])),
-                            Float.parseFloat(params[3]),
-                            Float.parseFloat(params[4]),
-                            Float.parseFloat(params[5]),
-                            Float.parseFloat(params[6]),
-                            Float.parseFloat(params[7]),
-                            Float.parseFloat(params[8]));
-                    this.m_lights.add(l);
-                    System.out.println(String.format("Parsed light (line %d)", lineNum));
-                } else {
-                    System.out.println(String.format("ERROR: Did not recognize object: %s (line %d)", code, lineNum));
+                switch (code) {
+                    case "cam" -> {
+                        this.m_camera = new Camera(
+                                new Position(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2])),
+                                new Vector(Float.parseFloat(params[3]), Float.parseFloat(params[4]), Float.parseFloat(params[5])),
+                                new Vector(Float.parseFloat(params[6]), Float.parseFloat(params[7]), Float.parseFloat(params[8])),
+                                Float.parseFloat(params[9]),
+                                Float.parseFloat(params[10]));
+                        System.out.println("Parsed camera parameters (line %d)".formatted(lineNum));
+                    }
+                    case "set" -> {
+                        this.m_scene = new Scene(
+                                Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2]),
+                                Integer.parseInt(params[3]),
+                                Integer.parseInt(params[4]),
+                                Integer.parseInt(params[5]));
+                        System.out.println("Parsed general settings (line %d)".formatted(lineNum));
+                    }
+                    case "mtl" -> {
+                        Material material = new Material(
+                                Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2]),
+                                Float.parseFloat(params[3]), Float.parseFloat(params[4]), Float.parseFloat(params[5]),
+                                Float.parseFloat(params[6]), Float.parseFloat(params[7]), Float.parseFloat(params[8]),
+                                Float.parseFloat(params[9]),
+                                Float.parseFloat(params[10]));
+                        this.m_materials.add(material);
+                        System.out.println("Parsed material (line %d)".formatted(lineNum));
+                    }
+                    case "sph" -> {
+                        Sphere sp = new Sphere(
+                                new Position(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2])),
+                                Float.parseFloat(params[3]),
+                                Integer.parseInt(params[4]) - 1);
+                        this.m_Surfaces.add(sp);
+                        System.out.println("Parsed sphere (line %d)".formatted(lineNum));
+                    }
+                    case "pln" -> {
+                        Plane p = new Plane(
+                                new Vector(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2])),
+                                Float.parseFloat(params[3]),
+                                Integer.parseInt(params[4]) - 1);
+                        this.m_Surfaces.add(p);
+                        System.out.println("Parsed plane (line %d)".formatted(lineNum));
+                    }
+                    case "trg" -> {
+                        Triangle t = new Triangle(
+                                new Position(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2])),
+                                new Position(Float.parseFloat(params[3]), Float.parseFloat(params[4]), Float.parseFloat(params[5])),
+                                new Position(Float.parseFloat(params[6]), Float.parseFloat(params[7]), Float.parseFloat(params[8])),
+                                Integer.parseInt(params[9]) - 1);
+                        this.m_Surfaces.add(t);
+                        System.out.println("Parsed triangle (line %d)".formatted(lineNum));
+                    }
+                    case "lgt" -> {
+                        Light l = new Light(
+                                new Position(Float.parseFloat(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2])),
+                                Float.parseFloat(params[3]),
+                                Float.parseFloat(params[4]),
+                                Float.parseFloat(params[5]),
+                                Float.parseFloat(params[6]),
+                                Float.parseFloat(params[7]),
+                                Float.parseFloat(params[8]));
+                        this.m_lights.add(l);
+                        System.out.println("Parsed light (line %d)".formatted(lineNum));
+                    }
+                    default -> System.out.println("ERROR: Did not recognize object: %s (line %d)".formatted(code, lineNum));
                 }
             }
         }
 
-        // It is recommended that you check here that the scene is valid,
-        // for example camera settings and all necessary materials were defined.
-
         System.out.println("Finished parsing scene file " + sceneFileName);
-        bfr.close();
     }
 
 
@@ -191,7 +204,7 @@ public class RayTracer {
      * @param outputFileName - the path to the output file where it should be written
      */
     public void renderScene(String outputFileName) {
-        long startTime = System.currentTimeMillis();
+        Instant start = Instant.now();
 
         // Create a byte array to hold the pixel data:
         m_rgbData = new byte[this.imageWidth * this.imageHeight * 3];
@@ -202,22 +215,22 @@ public class RayTracer {
 
         for (int i = 0; i < this.imageHeight; i++) {
             for (int j = 0; j < this.imageWidth; j++) {
-                if (m_scene.super_sampling_level > 1) {
-                    for (int k = 0; k < m_scene.super_sampling_level; k++) {
-                        for (int l = 0; l < m_scene.super_sampling_level; l++) {
+                if (m_scene.super_sampling_level() > 1) {
+                    for (int k = 0; k < m_scene.super_sampling_level(); k++) {
+                        for (int l = 0; l < m_scene.super_sampling_level(); l++) {
                             //Construct ray from eye position through view plane
-                            Ray ray = ConstructRayThroughPixelSuperSampling(i, j, k, l, m_scene.super_sampling_level);
+                            Ray ray = ConstructRayThroughPixelSuperSampling(i, j, k, l, m_scene.super_sampling_level());
                             //Find first surface intersected by ray through pixel
 
                             Intersection hit = FindIntersection(ray, m_camera.position, -2, true);
-                            while (hit.surface != null && m_materials.get(hit.surface.material_index).transparency != 0) {
+                            while (hit.surface() != null && m_materials.get(hit.surface().material_index).transparency != 0) {
                                 //Compute color of sample based on surface radiance
-                                GetColor(i, j, hit, ray.direction, m_camera.position, m_scene.max_recursion, 1, 1, 1);
-                                hit.surface.setUsed(true);
+                                GetColor(i, j, hit, ray.direction, m_camera.position, m_scene.max_recursion(), 1, 1, 1);
+                                hit.surface().setUsed(true);
                                 hit = FindIntersection(ray, m_camera.position, -2, true);
                             }
 
-                            GetColor(i, j, hit, ray.direction, m_camera.position, m_scene.max_recursion, 1, 1, 1);
+                            GetColor(i, j, hit, ray.direction, m_camera.position, m_scene.max_recursion(), 1, 1, 1);
                             for (Surface surf : m_Surfaces)
                                 surf.setUsed(false);
 
@@ -231,14 +244,14 @@ public class RayTracer {
                     //Find first surface intersected by ray through pixel
 
                     Intersection hit = FindIntersection(ray, m_camera.position, -2, true);
-                    while (hit.surface != null && m_materials.get(hit.surface.material_index).transparency != 0) {
+                    while (hit.surface() != null && m_materials.get(hit.surface().material_index).transparency != 0) {
                         //Compute color of sample based on surface radiance
-                        GetColor(i, j, hit, ray.direction, m_camera.position, m_scene.max_recursion, 1, 1, 1);
-                        hit.surface.setUsed(true);
+                        GetColor(i, j, hit, ray.direction, m_camera.position, m_scene.max_recursion(), 1, 1, 1);
+                        hit.surface().setUsed(true);
                         hit = FindIntersection(ray, m_camera.position, -2, true);
                     }
 
-                    GetColor(i, j, hit, ray.direction, m_camera.position, m_scene.max_recursion, 1, 1, 1);
+                    GetColor(i, j, hit, ray.direction, m_camera.position, m_scene.max_recursion(), 1, 1, 1);
                     for (Surface surf : m_Surfaces)
                         surf.setUsed(false);
                 }
@@ -246,12 +259,12 @@ public class RayTracer {
             }
         }
 
-        long endTime = System.currentTimeMillis();
-        long renderTime = endTime - startTime;
+        Duration elapsed = Duration.between(start, Instant.now());
 
         // The time is measured for your own convenience, rendering speed will not affect your score
         // unless it is exceptionally slow (more than a couple of minutes)
-        System.out.println("Finished rendering scene in " + Long.toString(renderTime) + " milliseconds, " + (renderTime / 1000) + " seconds, and " + (renderTime / 60000) + " minutes.");
+        System.out.println("Finished rendering scene in %d ms (~%d s, ~%d min).".formatted(
+                elapsed.toMillis(), elapsed.toSeconds(), elapsed.toMinutes()));
 
         // This is already implemented, and should work without adding any code.
         saveImage(this.imageWidth, m_rgbData, outputFileName);
@@ -336,9 +349,9 @@ public class RayTracer {
         double min_t = Double.MAX_VALUE;
         Surface min_primitive = null;
         for (Surface primitive : m_Surfaces) {
-            if (isMain == true && primitive.getUsed() == true)
+            if (isMain && primitive.getUsed())
                 continue;
-            double t = Intersection.Intersect(ray, primitive, camPosition);
+            double t = Intersection.intersect(ray, primitive, camPosition);
             if (distance < 0) {
                 if (t < min_t && t != -1) {
                     min_primitive = primitive;
@@ -369,22 +382,22 @@ public class RayTracer {
 
         rayDirection.normalize();
         //if we didn't hit no surface we return the background color
-        if (intersectionData.surface == null) {
-            insertColorIntoArray(i, j, m_scene.bgr * refRed, 0);
-            insertColorIntoArray(i, j, m_scene.bgg * refGreen, 1);
-            insertColorIntoArray(i, j, m_scene.bgb * refBlue, 2);
+        if (intersectionData.surface() == null) {
+            insertColorIntoArray(i, j, m_scene.bgr() * refRed, 0);
+            insertColorIntoArray(i, j, m_scene.bgg() * refGreen, 1);
+            insertColorIntoArray(i, j, m_scene.bgb() * refBlue, 2);
             return;
         }
 
-        Material surfaceMaterial = m_materials.get(intersectionData.surface.material_index);
-        Vector hitPositionOnSurface = Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection, intersectionData.distance - m_epsilon));
-        Vector normalAtHitPosition = intersectionData.surface.calculateNormalAtPosition(hitPositionOnSurface, cameraPosition).normalize(); //N
+        Material surfaceMaterial = m_materials.get(intersectionData.surface().material_index);
+        Vector hitPositionOnSurface = Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection, intersectionData.distance() - m_epsilon));
+        Vector normalAtHitPosition = intersectionData.surface().calculateNormalAtPosition(hitPositionOnSurface, cameraPosition).normalize(); //N
 
         //calculate background / transparency color
         if (surfaceMaterial.transparency > 0) {
-            //System.out.println("Surface is : "+intersectionData.surface + " and transparency is: " + surfaceMaterial.transparency);
+            //System.out.println("Surface is : "+intersectionData.surface() + " and transparency is: " + surfaceMaterial.transparency);
             //construct new Ray - reduce epsilon of normal direction
-            Ray transparencyRay = new Ray(rayDirection, Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection, intersectionData.surface.exit)));
+            Ray transparencyRay = new Ray(rayDirection, Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection, intersectionData.surface().exit)));
             //Find first surface intersected by ray through pixel
             Intersection transparencyHit = FindIntersection(transparencyRay, transparencyRay.position, -2, false);
             //Compute color of sample based on surface radiance
@@ -401,12 +414,12 @@ public class RayTracer {
             double redPixelColor = 0;
             double greenPixelColor = 0;
             double bluePixelColor = 0;
-            Position lightPosition = light.position;
+            Position lightPosition = light.position();
             Vector toLight = Vector.SubVectors(lightPosition, hitPositionOnSurface); //L - vector to Light
 
             double distanceFromLight = Vector.Magnitude(toLight); //distance from light
 
-            if ((!(intersectionData.surface instanceof Sphere)) && (Vector.DotProduct(normalAtHitPosition, toLight) < 0)) {
+            if ((!(intersectionData.surface() instanceof Sphere)) && (Vector.DotProduct(normalAtHitPosition, toLight) < 0)) {
                 normalAtHitPosition = Vector.ScalarMultiply(normalAtHitPosition, -1);
             }
             toLight.normalize();
@@ -416,7 +429,7 @@ public class RayTracer {
             Vector H = Vector.AddVectors(toLight, V).normalize(); //highlight vector
 
             //check if light hits the object
-            minHitDistanceFromLight = FindIntersectionLight(new Ray(Vector.ScalarMultiply(toLight, -1), lightPosition), lightPosition, distanceFromLight, false, light).distance;
+            minHitDistanceFromLight = FindIntersectionLight(new Ray(Vector.ScalarMultiply(toLight, -1), lightPosition), lightPosition, distanceFromLight, false, light).distance();
 
             normalAtHitPosition.normalize();
             double costheta = Vector.DotProduct(H, normalAtHitPosition);
@@ -427,43 +440,43 @@ public class RayTracer {
 
                 //calculating diffuse color
                 if (Vector.DotProduct(normalAtHitPosition, toLight) > 0) {
-                    redPixelColor += surfaceMaterial.dr * Vector.DotProduct(normalAtHitPosition, toLight) * light.red * (1 - surfaceMaterial.transparency);
-                    greenPixelColor += surfaceMaterial.dg * Vector.DotProduct(normalAtHitPosition, toLight) * light.green * (1 - surfaceMaterial.transparency);
-                    bluePixelColor += surfaceMaterial.db * Vector.DotProduct(normalAtHitPosition, toLight) * light.blue * (1 - surfaceMaterial.transparency);
+                    redPixelColor += surfaceMaterial.dr * Vector.DotProduct(normalAtHitPosition, toLight) * light.red() * (1 - surfaceMaterial.transparency);
+                    greenPixelColor += surfaceMaterial.dg * Vector.DotProduct(normalAtHitPosition, toLight) * light.green() * (1 - surfaceMaterial.transparency);
+                    bluePixelColor += surfaceMaterial.db * Vector.DotProduct(normalAtHitPosition, toLight) * light.blue() * (1 - surfaceMaterial.transparency);
                 }
 
                 //calculating specular color
 
                 if (costheta > 0) {
-                    redPixelColor += surfaceMaterial.sr * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.red * light.specular_intensity) * (1 - surfaceMaterial.transparency);
-                    greenPixelColor += surfaceMaterial.sg * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.green * light.specular_intensity) * (1 - surfaceMaterial.transparency);
-                    bluePixelColor += surfaceMaterial.sb * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.blue * light.specular_intensity) * (1 - surfaceMaterial.transparency);
+                    redPixelColor += surfaceMaterial.sr * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.red() * light.specular_intensity()) * (1 - surfaceMaterial.transparency);
+                    greenPixelColor += surfaceMaterial.sg * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.green() * light.specular_intensity()) * (1 - surfaceMaterial.transparency);
+                    bluePixelColor += surfaceMaterial.sb * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.blue() * light.specular_intensity()) * (1 - surfaceMaterial.transparency);
                 }
             } else {
                 if ((minHitDistanceFromLight != -1)) {
                     //calculating diffuse color
                     if (Vector.DotProduct(normalAtHitPosition, toLight) > 0) {
-                        redPixelColor += surfaceMaterial.dr * Vector.DotProduct(normalAtHitPosition, toLight) * light.red * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity);
-                        greenPixelColor += surfaceMaterial.dg * Vector.DotProduct(normalAtHitPosition, toLight) * light.green * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity);
-                        bluePixelColor += surfaceMaterial.db * Vector.DotProduct(normalAtHitPosition, toLight) * light.blue * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity);
+                        redPixelColor += surfaceMaterial.dr * Vector.DotProduct(normalAtHitPosition, toLight) * light.red() * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity());
+                        greenPixelColor += surfaceMaterial.dg * Vector.DotProduct(normalAtHitPosition, toLight) * light.green() * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity());
+                        bluePixelColor += surfaceMaterial.db * Vector.DotProduct(normalAtHitPosition, toLight) * light.blue() * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity());
                     }
 
                     //calculating specular color
                     if (costheta > 0) {
-                        redPixelColor += surfaceMaterial.sr * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.red * light.specular_intensity) * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity);
-                        greenPixelColor += surfaceMaterial.sg * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.green * light.specular_intensity) * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity);
-                        bluePixelColor += surfaceMaterial.sb * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.blue * light.specular_intensity) * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity);
+                        redPixelColor += surfaceMaterial.sr * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.red() * light.specular_intensity()) * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity());
+                        greenPixelColor += surfaceMaterial.sg * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.green() * light.specular_intensity()) * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity());
+                        bluePixelColor += surfaceMaterial.sb * Math.pow(costheta, surfaceMaterial.phong_specularity_coefficient) * (light.blue() * light.specular_intensity()) * (1 - surfaceMaterial.transparency) * (1 - light.shadow_intensity());
                     }
                 }
             }
             int numOfShadowHits = 1;
-            if (m_scene.shadow_rays_num > 1) {
+            if (m_scene.shadow_rays_num() > 1) {
                 numOfShadowHits = RayShadowsHits(i, j, light, intersectionData, rayDirection, cameraPosition);
             }
             //System.out.println(numOfShadowHits);
-            redPixelColorMain += redPixelColor * numOfShadowHits / Math.pow(m_scene.shadow_rays_num, 2);
-            greenPixelColorMain += greenPixelColor * numOfShadowHits / Math.pow(m_scene.shadow_rays_num, 2);
-            bluePixelColorMain += bluePixelColor * numOfShadowHits / Math.pow(m_scene.shadow_rays_num, 2);
+            redPixelColorMain += redPixelColor * numOfShadowHits / Math.pow(m_scene.shadow_rays_num(), 2);
+            greenPixelColorMain += greenPixelColor * numOfShadowHits / Math.pow(m_scene.shadow_rays_num(), 2);
+            bluePixelColorMain += bluePixelColor * numOfShadowHits / Math.pow(m_scene.shadow_rays_num(), 2);
         }
 
         //calculating reflection color
@@ -500,7 +513,7 @@ public class RayTracer {
      */
     private void insertColorIntoArray(int x, int y, double data, int colorNum) {
 
-        if (m_scene.super_sampling_level > 1) {
+        if (m_scene.super_sampling_level() > 1) {
             insertColorIntoArraySS(x, y, data, colorNum);
             return;
         }
@@ -580,15 +593,15 @@ public class RayTracer {
      * @param j
      */
     private void calculateAvarageColorSS(int i, int j) {
-        double avgRed = m_rgbDataSS[0] / (m_scene.super_sampling_level * m_scene.super_sampling_level);
+        double avgRed = m_rgbDataSS[0] / (m_scene.super_sampling_level() * m_scene.super_sampling_level());
         if (avgRed > 1) {
             avgRed = 1;
         }
-        double avgGreen = m_rgbDataSS[1] / (m_scene.super_sampling_level * m_scene.super_sampling_level);
+        double avgGreen = m_rgbDataSS[1] / (m_scene.super_sampling_level() * m_scene.super_sampling_level());
         if (avgGreen > 1) {
             avgGreen = 1;
         }
-        double avgBlue = m_rgbDataSS[2] / (m_scene.super_sampling_level * m_scene.super_sampling_level);
+        double avgBlue = m_rgbDataSS[2] / (m_scene.super_sampling_level() * m_scene.super_sampling_level());
         if (avgBlue > 1) {
             avgBlue = 1;
         }
@@ -625,9 +638,9 @@ public class RayTracer {
         double min_t = Double.MAX_VALUE;
         Surface min_primitive = null;
         for (Surface primitive : m_Surfaces) {
-            if (isMain == true && primitive.getUsed() == true)
+            if (isMain && primitive.getUsed())
                 continue;
-            double t = Intersection.Intersect(ray, primitive, camPosition);
+            double t = Intersection.intersect(ray, primitive, camPosition);
             if (distance < 0) {
                 if (t < min_t && t != -1) {
                     min_primitive = primitive;
@@ -637,7 +650,7 @@ public class RayTracer {
                 if (t < min_t && t != -1 && (m_materials.get(primitive.material_index).transparency == 0 || t == distance)) {
                     min_primitive = primitive;
                     min_t = t + m_epsilon;
-                    if (min_t < distance && light.shadow_intensity == 1) {
+                    if (min_t < distance && light.shadow_intensity() == 1) {
                         return new Intersection(-1, null);
                     }
                 }
@@ -655,8 +668,8 @@ public class RayTracer {
 
         double randomDouble = Math.random();
 
-        double H = light.radius;
-        double W = light.radius;
+        double H = light.radius();
+        double W = light.radius();
         Vector temp1;
         Vector temp2;
         //normalized vector ||normalVector|| = 1
@@ -668,7 +681,7 @@ public class RayTracer {
         //calculate V such that ||V|| = 1
         Vector V = Vector.crossProduct(normalVector, right);
 
-        Position centerImagePosition = light.position;
+        Position centerImagePosition = light.position();
         //calculate top left vector
         temp1 = Vector.ScalarMultiply(V, H / 2);
         temp2 = Vector.ScalarMultiply(right, -W / 2);
@@ -676,8 +689,8 @@ public class RayTracer {
         topLeft = Vector.AddVectors(topLeft, temp2);
 
         //calculate the point coordinates - not exactly in middle of pixel with random double between 0-1
-        temp1 = Vector.ScalarMultiply(right, (i * (randomDouble) * W / m_scene.shadow_rays_num));
-        temp2 = Vector.ScalarMultiply(V, -(j * (randomDouble) * H / m_scene.shadow_rays_num));
+        temp1 = Vector.ScalarMultiply(right, (i * (randomDouble) * W / m_scene.shadow_rays_num()));
+        temp2 = Vector.ScalarMultiply(V, -(j * (randomDouble) * H / m_scene.shadow_rays_num()));
         Vector s = Vector.AddVectors(temp1, temp2);
         s = Vector.AddVectors(s, topLeft);
         Vector rayVectorDirection = Vector.SubVectors(s, HitPositionOnSurface).normalize();
@@ -705,25 +718,25 @@ public class RayTracer {
         rayDirection = rayDirection.normalize();
         int NumOfHits = 0;
 
-        Vector hitPositionOnSurface = Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection, intersectionData.distance - m_epsilon));
+        Vector hitPositionOnSurface = Vector.AddVectors(cameraPosition, Vector.ScalarMultiply(rayDirection, intersectionData.distance() - m_epsilon));
 
-        Position lightPosition = light.position;
+        Position lightPosition = light.position();
         Vector toLight = Vector.SubVectors(lightPosition, hitPositionOnSurface); //L - vector to Light
         double distanceFromLight = Vector.Magnitude(toLight); //distance from light
-        Vector normalAtHitPosition = intersectionData.surface.calculateNormalAtPosition(hitPositionOnSurface, cameraPosition).normalize(); //N
+        Vector normalAtHitPosition = intersectionData.surface().calculateNormalAtPosition(hitPositionOnSurface, cameraPosition).normalize(); //N
 
-        if ((!(intersectionData.surface instanceof Sphere)) && (Vector.DotProduct(normalAtHitPosition, toLight) < 0)) {
+        if ((!(intersectionData.surface() instanceof Sphere)) && (Vector.DotProduct(normalAtHitPosition, toLight) < 0)) {
             normalAtHitPosition = Vector.ScalarMultiply(normalAtHitPosition, -1);
         }
-        for (int x = 0; x < m_scene.shadow_rays_num; x++) {
-            for (int y = 0; y < m_scene.shadow_rays_num; y++) {
+        for (int x = 0; x < m_scene.shadow_rays_num(); x++) {
+            for (int y = 0; y < m_scene.shadow_rays_num(); y++) {
                 //Construct ray from eye position through view plane
                 Ray shadowRay = ConstructRayThroughPixelForShadowRays(x, y, toLight, light, hitPositionOnSurface);
 
                 double minHitDistanceFromLight;
 
                 //check if light hits the object
-                minHitDistanceFromLight = FindIntersectionLight(shadowRay, shadowRay.position, Vector.Magnitude(Vector.SubVectors(shadowRay.position, hitPositionOnSurface)), false, light).distance;
+                minHitDistanceFromLight = FindIntersectionLight(shadowRay, shadowRay.position, Vector.Magnitude(Vector.SubVectors(shadowRay.position, hitPositionOnSurface)), false, light).distance();
 
                 //if we are the first object the light hits
                 if (minHitDistanceFromLight - distanceFromLight >= 0 || (minHitDistanceFromLight != -1)) {

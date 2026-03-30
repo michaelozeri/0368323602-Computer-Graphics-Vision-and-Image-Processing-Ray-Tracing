@@ -1,1 +1,23 @@
+# Legacy / local
 /bin/
+
+# Gradle
+.gradle/
+build/
+
+# JVM / other build outputs
+out/
+*.class
+
+# OS
+.DS_Store
+
+# IDE — machine-specific (keep shared .idea/*.xml only if you want team settings)
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+.idea/httpRequests/
+
+# Logs
+*.log

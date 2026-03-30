@@ -1,11 +1,34 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.2.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
+    id 'org.springframework.boot' version '4.0.5'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+/*
+ * Common commands (all are plugin tasks unless noted):
+ *   ./gradlew bootRun   — run the app (Spring Boot)
+ *   ./gradlew start     — same as bootRun (alias below)
+ *   ./gradlew build     — compile, test, jar
+ *   ./gradlew test      — tests only
+ *   ./gradlew clean     — delete build/
+ *   ./gradlew bootJar   — executable fat JAR (for deploy)
+ * Discover everything: ./gradlew tasks
+ */
+
+tasks.register('start') {
+    group = 'development'
+    description = 'Run the application (delegates to bootRun).'
+    dependsOn 'bootRun'
 }
 
 group = 'com.rayTracing'
 version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
 
 repositories {
     mavenCentral()
@@ -13,18 +36,12 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'mysql:mysql-connector-java'
-    implementation 'org.springframework.boot:spring-boot-starter-jooq:1.3.5.RELEASE'
-// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-core
-    compile group: 'org.springdoc', name: 'springdoc-openapi-core', version: '1.1.3'
-    // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
-    compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.1.44'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-test {
+tasks.named('test') {
     useJUnitPlatform()
 }
